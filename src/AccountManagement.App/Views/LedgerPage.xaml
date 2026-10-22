@@ -75,7 +75,7 @@
             <Grid RowDefinitions="Auto,*">
 
                 <!-- Table Header -->
-                <Grid Grid.Row="0" ColumnDefinitions="110,120,180,*,110,110,110,90,90" BackgroundColor="#DCE3EF" Padding="16,12">
+                <Grid Grid.Row="0" ColumnDefinitions="105,115,160,*,100,100,100,85,140" BackgroundColor="#DCE3EF" Padding="16,12">
                     <Label Grid.Column="0" Text="DATE" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                     <Label Grid.Column="1" Text="JOB NO" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                     <Label Grid.Column="2" Text="CUSTOMER" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
@@ -100,7 +100,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:TransactionDto">
                             <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="16,12" BackgroundColor="#FFFFFF">
-                                <Grid ColumnDefinitions="110,120,180,*,110,110,110,90,90" VerticalOptions="Center">
+                                <Grid ColumnDefinitions="105,115,160,*,100,100,100,85,140" VerticalOptions="Center">
                                     <Label Grid.Column="0" Text="{Binding TransactionDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#475569" FontSize="12" />
                                     <Label Grid.Column="1" Text="{Binding TransactionNumber}" TextColor="#3D73B0" FontAttributes="Bold" FontSize="12" />
                                     <Label Grid.Column="2" Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" LineBreakMode="TailTruncation" />
@@ -130,19 +130,31 @@
                                         </Label>
                                     </Border>
 
-                                    <!-- Action: Cancel Transaction Button -->
-                                    <Button Grid.Column="8" 
-                                            Text="Cancel" 
-                                            Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.CancelTransactionCommand}"
-                                            CommandParameter="{Binding .}"
-                                            IsVisible="{Binding CanCancel}"
-                                            BackgroundColor="#FEE2E2" 
-                                            TextColor="#DC2626" 
-                                            FontSize="10" 
-                                            Padding="6,2" 
-                                            HeightRequest="28" 
-                                            CornerRadius="4" 
-                                            HorizontalOptions="Center" />
+                                    <!-- Action Buttons: Cancel and Delete -->
+                                    <HorizontalStackLayout Grid.Column="8" Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Button Text="Cancel" 
+                                                Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.CancelTransactionCommand}"
+                                                CommandParameter="{Binding .}"
+                                                IsVisible="{Binding CanCancel}"
+                                                BackgroundColor="#FEF3C7" 
+                                                TextColor="#B45309" 
+                                                FontSize="10" 
+                                                FontAttributes="Bold"
+                                                Padding="6,2" 
+                                                HeightRequest="28" 
+                                                CornerRadius="4" />
+
+                                        <Button Text="🗑 Del" 
+                                                Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.DeleteTransactionCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#FEE2E2" 
+                                                TextColor="#DC2626" 
+                                                FontSize="10" 
+                                                FontAttributes="Bold"
+                                                Padding="6,2" 
+                                                HeightRequest="28" 
+                                                CornerRadius="4" />
+                                    </HorizontalStackLayout>
                                 </Grid>
                             </Border>
                         </DataTemplate>

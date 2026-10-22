@@ -144,4 +144,115 @@ public class LedgerServiceIntegrationTests
         var custAfterCancel = await context.Customers.FindAsync(customer.Id);
         custAfterCancel!.CurrentBalance.Should().Be(0m);
     }
+
+    [Fact]
+    public async Task DeleteTransactionAsync_DeletesTransaction_AndRevertsCustomerBalance()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext();
+        var customer = new Customer
+        {
+            Name = "Padma Publications",
+            OpeningBalance = 0m,
+            CurrentBalance = 0m
+        };
+        await context.Customers.AddAsync(customer);
+        await context.SaveChangesAsync();
+
+        var service = new LedgerService(context, NullLogger<LedgerService>.Instance);
+
+        var dto = new CreateTransactionDto
+        {
+            TransactionDate = new DateOnly(2026, 10, 21),
+            CustomerId = customer.Id,
+            WorkDescription = "Brochure Print 5000 pcs",
+            Discount = 0m,
+            InitialPaymentAmount = 1500m,
+            Items = new List<CreateTransactionItemDto>
+            {
+                new() { MaterialName = "Art Card 300 GSM", Quantity = 10m, UnitRate = 500m } // 5000 total
+            }
+        };
+
+        var created = await service.CreateTransactionAsync(dto);
+        var custAfterCreate = await context.Customers.FindAsync(customer.Id);
+        // Bill: 5000, Advance Paid: 1500, Due: 3500 -> Customer balance is 3500
+        custAfterCreate!.CurrentBalance.Should().Be(3500m);
+
+        // Act
+        bool result = await service.DeleteTransactionAsync(created.Id);
+
+        // Assert
+        result.Should().BeTrue();
+        var deletedTxn = await context.Transactions.FindAsync(created.Id);
+        deletedTxn.Should().BeNull();
+
+        // Customer balance should be restored back to 0
+        var custAfterDelete = await context.Customers.FindAsync(customer.Id);
+        custAfterDelete!.CurrentBalance.Should().Be(0m);
+    }
+
+    [Fact]
+    public async Task DeleteTransactionAsync_WhenAlreadyCancelled_DeletesWithoutDoubleRevertingBalance()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext();
+        var customer = new Customer
+        {
+            Name = "Jamuna Printing House",
+            OpeningBalance = 2000m,
+            CurrentBalance = 2000m
+        };
+        await context.Customers.AddAsync(customer);
+        await context.SaveChangesAsync();
+
+        var service = new LedgerService(context, NullLogger<LedgerService>.Instance);
+
+        var dto = new CreateTransactionDto
+        {
+            TransactionDate = new DateOnly(2026, 10, 21),
+            CustomerId = customer.Id,
+            WorkDescription = "Mistake order",
+            Discount = 0m,
+            Items = new List<CreateTransactionItemDto>
+            {
+                new() { MaterialName = "Offset 70 GSM", Quantity = 2m, UnitRate = 1000m } // 2000 due
+            }
+        };
+
+        var created = await service.CreateTransactionAsync(dto);
+        var custAfterCreate = await context.Customers.FindAsync(customer.Id);
+        custAfterCreate!.CurrentBalance.Should().Be(4000m);
+
+        // Cancel first
+        await service.CancelTransactionAsync(created.Id, "Wrong entry");
+        var custAfterCancel = await context.Customers.FindAsync(customer.Id);
+        custAfterCancel!.CurrentBalance.Should().Be(2000m);
+
+        // Act - Delete the cancelled transaction
+        bool result = await service.DeleteTransactionAsync(created.Id);
+
+        // Assert
+        result.Should().BeTrue();
+        var deletedTxn = await context.Transactions.FindAsync(created.Id);
+        deletedTxn.Should().BeNull();
+
+        // Balance should remain 2000m without double deduction
+        var custAfterDelete = await context.Customers.FindAsync(customer.Id);
+        custAfterDelete!.CurrentBalance.Should().Be(2000m);
+    }
+
+    [Fact]
+    public async Task DeleteTransactionAsync_NonExistentId_ReturnsFalse()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext();
+        var service = new LedgerService(context, NullLogger<LedgerService>.Instance);
+
+        // Act
+        bool result = await service.DeleteTransactionAsync(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeFalse();
+    }
 }

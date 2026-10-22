@@ -216,6 +216,49 @@ public class LedgerService : ILedgerService
         return true;
     }
 
+    public async Task<bool> DeleteTransactionAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var transaction = await _context.Transactions
+            .Include(t => t.Customer)
+            .Include(t => t.Items)
+            .Include(t => t.CostEntries)
+            .Include(t => t.Payments)
+            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+
+        if (transaction == null)
+            return false;
+
+        // If transaction was not cancelled, revert customer's outstanding balance due
+        if (transaction.Status != TransactionStatus.Cancelled && transaction.Customer != null)
+        {
+            transaction.Customer.CurrentBalance = Math.Max(0m, transaction.Customer.CurrentBalance - transaction.BalanceDue);
+        }
+
+        // If there are payments linked to this transaction, remove them
+        if (transaction.Payments.Count > 0)
+        {
+            _context.Payments.RemoveRange(transaction.Payments);
+        }
+
+        _context.Transactions.Remove(transaction);
+
+        // Audit Log
+        await _context.AuditLogs.AddAsync(new AuditLog
+        {
+            Action = "DeleteTransaction",
+            EntityName = nameof(Transaction),
+            EntityId = transaction.Id.ToString(),
+            Details = $"Deleted transaction {transaction.TransactionNumber} for customer {transaction.Customer?.Name ?? "Unknown"}",
+            ChangedBy = "Owner"
+        }, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogWarning("Deleted transaction {TransactionNumber} for customer {CustomerName}",
+            transaction.TransactionNumber, transaction.Customer?.Name);
+        return true;
+    }
+
     public async Task<string> GenerateNextTransactionNumberAsync(DateOnly date, CancellationToken cancellationToken = default)
     {
         string prefix = $"TXN-{date:yyyyMM}-";

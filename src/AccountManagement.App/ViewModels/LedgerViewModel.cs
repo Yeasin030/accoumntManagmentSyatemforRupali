@@ -200,4 +200,41 @@ public partial class LedgerViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Error", $"Could not cancel transaction: {ex.Message}", "OK");
         }
     }
+
+    [RelayCommand]
+    public async Task DeleteTransactionAsync(TransactionDto? transaction)
+    {
+        if (transaction == null) return;
+
+        bool confirm = await Shell.Current.DisplayAlert(
+            "Confirm Delete | লেনদেন মুছে ফেলুন",
+            $"Are you sure you want to permanently delete transaction '{transaction.TransactionNumber}' ({transaction.CustomerName})?\n\nআপনি কি নিশ্চিত যে '{transaction.TransactionNumber}' নম্বর লেনদেনটি স্থায়ীভাবে মুছে ফেলতে চান? গ্রাহকের বকেয়া ব্যালেন্স স্বয়ংক্রিয়ভাবে সমন্বয় করা হবে।",
+            "Delete | মুছে ফেলুন",
+            "Cancel | বাতিল");
+
+        if (!confirm) return;
+
+        try
+        {
+            bool deleted = await _ledgerService.DeleteTransactionAsync(transaction.Id);
+            if (deleted)
+            {
+                Transactions.Remove(transaction);
+                TotalCount = Math.Max(0, TotalCount - 1);
+
+                await Shell.Current.DisplayAlert(
+                    "Deleted | মুছে ফেলা হয়েছে",
+                    $"Transaction '{transaction.TransactionNumber}' has been permanently deleted.\nCustomer balance has been updated.",
+                    "OK");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Transaction could not be deleted.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Could not delete transaction: {ex.Message}", "OK");
+        }
+    }
 }

@@ -19,6 +19,7 @@ public interface ILedgerService
     Task<TransactionDto?> GetTransactionByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<TransactionDto> CreateTransactionAsync(CreateTransactionDto dto, CancellationToken cancellationToken = default);
     Task<bool> CancelTransactionAsync(Guid id, string reason, CancellationToken cancellationToken = default);
+    Task<bool> DeleteTransactionAsync(Guid id, CancellationToken cancellationToken = default);
     Task<string> GenerateNextTransactionNumberAsync(DateOnly date, CancellationToken cancellationToken = default);
 }
 
