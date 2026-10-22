@@ -47,12 +47,14 @@ public interface IPaymentService
 {
     Task<IReadOnlyList<PaymentDto>> GetPaymentsAsync(Guid? customerId = null, Guid? transactionId = null, DateOnly? startDate = null, DateOnly? endDate = null, CancellationToken cancellationToken = default);
     Task<PaymentDto> RecordPaymentAsync(CreatePaymentDto dto, CancellationToken cancellationToken = default);
+    Task<bool> DeletePaymentAsync(Guid id, CancellationToken cancellationToken = default);
 }
 
 public interface IExpenseService
 {
     Task<IReadOnlyList<ExpenseDto>> GetExpensesAsync(DateOnly? startDate = null, DateOnly? endDate = null, string? category = null, CancellationToken cancellationToken = default);
     Task<ExpenseDto> RecordExpenseAsync(CreateExpenseDto dto, CancellationToken cancellationToken = default);
+    Task<bool> DeleteExpenseAsync(Guid id, CancellationToken cancellationToken = default);
 }
 
 public interface IDashboardService

@@ -100,4 +100,27 @@ public class ExpenseService : IExpenseService
             Remarks = expense.Remarks
         };
     }
+
+    public async Task<bool> DeleteExpenseAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var expense = await _context.Expenses.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+        if (expense == null)
+            return false;
+
+        _context.Expenses.Remove(expense);
+
+        await _context.AuditLogs.AddAsync(new AuditLog
+        {
+            Action = "DeleteExpense",
+            EntityName = nameof(Expense),
+            EntityId = expense.Id.ToString(),
+            Details = $"Deleted expense {expense.ExpenseNumber} ({expense.Category}: {expense.Amount} BDT)",
+            ChangedBy = "Owner"
+        }, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogWarning("Deleted expense {ExpenseNumber}: {Amount} BDT", expense.ExpenseNumber, expense.Amount);
+        return true;
+    }
 }

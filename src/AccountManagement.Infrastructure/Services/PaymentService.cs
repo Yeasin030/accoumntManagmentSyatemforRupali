@@ -86,6 +86,8 @@ public class PaymentService : IPaymentService
         // Reduce Customer's current balance
         customer.CurrentBalance = Math.Max(0m, customer.CurrentBalance - dto.Amount);
 
+        await _context.Payments.AddAsync(payment, cancellationToken);
+
         // If payment is assigned to a specific transaction, recalculate transaction paid amount and due
         if (dto.TransactionId.HasValue)
         {
@@ -97,13 +99,12 @@ public class PaymentService : IPaymentService
 
             if (transaction != null)
             {
-                transaction.Payments.Add(payment);
+                if (!transaction.Payments.Contains(payment))
+                {
+                    transaction.Payments.Add(payment);
+                }
                 transaction.RecalculateTotals();
             }
-        }
-        else
-        {
-            await _context.Payments.AddAsync(payment, cancellationToken);
         }
 
         // Audit Log
@@ -133,5 +134,54 @@ public class PaymentService : IPaymentService
             ReferenceNumber = payment.ReferenceNumber,
             Remarks = payment.Remarks
         };
+    }
+
+    public async Task<bool> DeletePaymentAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var payment = await _context.Payments
+            .Include(p => p.Customer)
+            .Include(p => p.Transaction)
+                .ThenInclude(t => t!.Payments)
+            .Include(p => p.Transaction)
+                .ThenInclude(t => t!.Items)
+            .Include(p => p.Transaction)
+                .ThenInclude(t => t!.CostEntries)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
+        if (payment == null)
+            return false;
+
+        // Revert customer's current balance (customer owes that amount again)
+        var customer = payment.Customer ?? await _context.Customers.FindAsync(new object[] { payment.CustomerId }, cancellationToken);
+        if (customer != null)
+        {
+            customer.CurrentBalance += payment.Amount;
+        }
+
+        // If this payment was tied to a transaction, remove it and recalculate transaction totals
+        if (payment.Transaction != null)
+        {
+            payment.Transaction.Payments.Remove(payment);
+            payment.Transaction.RecalculateTotals();
+        }
+
+        _context.Payments.Remove(payment);
+
+        // Audit Log
+        await _context.AuditLogs.AddAsync(new AuditLog
+        {
+            Action = "DeletePayment",
+            EntityName = nameof(Payment),
+            EntityId = payment.Id.ToString(),
+            Details = $"Deleted payment {payment.PaymentNumber} of {payment.Amount} BDT for customer {customer?.Name ?? "Unknown"}",
+            ChangedBy = "Owner"
+        }, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        _logger.LogWarning("Deleted payment {PaymentNumber} of {Amount} BDT for customer {CustomerName}",
+            payment.PaymentNumber, payment.Amount, customer?.Name);
+
+        return true;
     }
 }

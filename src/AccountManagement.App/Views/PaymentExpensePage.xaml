@@ -5,6 +5,7 @@
              xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
              xmlns:enums="clr-namespace:AccountManagement.Domain.Enums;assembly=AccountManagement.Domain"
              x:Class="AccountManagement.App.Views.PaymentExpensePage"
+             x:Name="PaymentExpenseViewPage"
              x:DataType="vm:PaymentExpenseViewModel"
              Title="Payments &amp; Expenses | জমা ও খরচ"
              BackgroundColor="#F9F7F7">
@@ -120,13 +121,26 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:PaymentDto">
                             <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="12" BackgroundColor="#FFFFFF" Margin="0,3">
-                                <Grid ColumnDefinitions="100,*,Auto" VerticalOptions="Center">
+                                <Grid ColumnDefinitions="90,*,Auto,Auto" VerticalOptions="Center" ColumnSpacing="8">
                                     <Label Grid.Column="0" Text="{Binding PaymentDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#64748B" FontSize="11" />
                                     <VerticalStackLayout Grid.Column="1" Spacing="2">
                                         <Label Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
                                         <Label Text="{Binding PaymentMethod, StringFormat='Via {0}'}" TextColor="#3D73B0" FontSize="11" />
                                     </VerticalStackLayout>
-                                    <Label Grid.Column="2" Text="{Binding Amount, StringFormat='+ ৳ {0:N2}'}" TextColor="#059669" FontAttributes="Bold" FontSize="14" />
+                                    <Label Grid.Column="2" Text="{Binding Amount, StringFormat='+ ৳ {0:N2}'}" TextColor="#059669" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" />
+                                    <Button Grid.Column="3" 
+                                            Text="🗑" 
+                                            Command="{Binding Source={x:Reference PaymentExpenseViewPage}, Path=BindingContext.DeletePaymentCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#FEE2E2" 
+                                            TextColor="#DC2626" 
+                                            FontSize="11" 
+                                            FontAttributes="Bold"
+                                            Padding="6,2" 
+                                            HeightRequest="28" 
+                                            WidthRequest="34" 
+                                            CornerRadius="4" 
+                                            ToolTipProperties.Text="Delete payment receipt | জমা মুছুন" />
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -211,13 +225,26 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:ExpenseDto">
                             <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="12" BackgroundColor="#FFFFFF" Margin="0,3">
-                                <Grid ColumnDefinitions="100,*,Auto" VerticalOptions="Center">
+                                <Grid ColumnDefinitions="90,*,Auto,Auto" VerticalOptions="Center" ColumnSpacing="8">
                                     <Label Grid.Column="0" Text="{Binding ExpenseDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#64748B" FontSize="11" />
                                     <VerticalStackLayout Grid.Column="1" Spacing="2">
                                         <Label Text="{Binding Category}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
                                         <Label Text="{Binding Description}" TextColor="#64748B" FontSize="11" LineBreakMode="TailTruncation" />
                                     </VerticalStackLayout>
-                                    <Label Grid.Column="2" Text="{Binding Amount, StringFormat='- ৳ {0:N2}'}" TextColor="#E11D48" FontAttributes="Bold" FontSize="14" />
+                                    <Label Grid.Column="2" Text="{Binding Amount, StringFormat='- ৳ {0:N2}'}" TextColor="#E11D48" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" />
+                                    <Button Grid.Column="3" 
+                                            Text="🗑" 
+                                            Command="{Binding Source={x:Reference PaymentExpenseViewPage}, Path=BindingContext.DeleteExpenseCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#FEE2E2" 
+                                            TextColor="#DC2626" 
+                                            FontSize="11" 
+                                            FontAttributes="Bold"
+                                            Padding="6,2" 
+                                            HeightRequest="28" 
+                                            WidthRequest="34" 
+                                            CornerRadius="4" 
+                                            ToolTipProperties.Text="Delete expense record | খরচ মুছুন" />
                                 </Grid>
                             </Border>
                         </DataTemplate>

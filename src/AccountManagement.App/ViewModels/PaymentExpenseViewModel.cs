@@ -232,4 +232,74 @@ public partial class PaymentExpenseViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Error", $"Could not record expense: {ex.Message}", "OK");
         }
     }
+
+    [RelayCommand]
+    public async Task DeletePaymentAsync(PaymentDto? payment)
+    {
+        if (payment == null) return;
+
+        bool confirm = await Shell.Current.DisplayAlert(
+            "Confirm Delete | জমা রেকর্ড মুছে ফেলুন",
+            $"Are you sure you want to delete payment receipt '{payment.PaymentNumber}' of ৳ {payment.Amount:N2} for '{payment.CustomerName}'?\n\nআপনি কি নিশ্চিত যে '{payment.PaymentNumber}' জমা রেকর্ডটি মুছে ফেলতে চান? গ্রাহকের বকেয়া ব্যালেন্সে এটি সমন্বয় (পুনরায় যোগ) হবে।",
+            "Delete | মুছে ফেলুন",
+            "Cancel | বাতিল");
+
+        if (!confirm) return;
+
+        try
+        {
+            bool deleted = await _paymentService.DeletePaymentAsync(payment.Id);
+            if (deleted)
+            {
+                RecentPayments.Remove(payment);
+                await Shell.Current.DisplayAlert(
+                    "Deleted | মুছে ফেলা হয়েছে",
+                    $"Payment receipt '{payment.PaymentNumber}' deleted successfully.\nCustomer balance updated.",
+                    "OK");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Payment record could not be deleted.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Could not delete payment: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    public async Task DeleteExpenseAsync(ExpenseDto? expense)
+    {
+        if (expense == null) return;
+
+        bool confirm = await Shell.Current.DisplayAlert(
+            "Confirm Delete | খরচ রেকর্ড মুছে ফেলুন",
+            $"Are you sure you want to delete expense record '{expense.ExpenseNumber}' ({expense.Category} - ৳ {expense.Amount:N2})?\n\nআপনি কি নিশ্চিত যে '{expense.ExpenseNumber}' খরচের রেকর্ডটি মুছে ফেলতে চান?",
+            "Delete | মুছে ফেলুন",
+            "Cancel | বাতিল");
+
+        if (!confirm) return;
+
+        try
+        {
+            bool deleted = await _expenseService.DeleteExpenseAsync(expense.Id);
+            if (deleted)
+            {
+                RecentExpenses.Remove(expense);
+                await Shell.Current.DisplayAlert(
+                    "Deleted | মুছে ফেলা হয়েছে",
+                    $"Expense record '{expense.ExpenseNumber}' deleted successfully.",
+                    "OK");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Expense record could not be deleted.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Could not delete expense: {ex.Message}", "OK");
+        }
+    }
 }
