@@ -445,10 +445,15 @@
                                             <Label Text="{Binding TransactionNumber}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" />
                                         </Border>
 
-                                        <!-- Customer Name & Work Description -->
+                                        <!-- Customer Name & Work Description with Profit Insight -->
                                         <VerticalStackLayout Grid.Column="2" Spacing="2" Padding="6,0">
                                             <Label Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
                                             <Label Text="{Binding WorkDescription}" TextColor="#64748B" FontSize="11" LineBreakMode="TailTruncation" />
+                                            <HorizontalStackLayout Spacing="6">
+                                                <Label Text="{Binding TotalDirectCost, StringFormat='খরচ: ৳ {0:N0}'}" TextColor="#64748B" FontSize="10" />
+                                                <Label Text="•" TextColor="#CBD5E1" FontSize="10" />
+                                                <Label Text="{Binding Profit, StringFormat='লাভ: ৳ {0:N0}'}" TextColor="#059669" FontAttributes="Bold" FontSize="10" />
+                                            </HorizontalStackLayout>
                                         </VerticalStackLayout>
 
                                         <!-- Financial Figures -->

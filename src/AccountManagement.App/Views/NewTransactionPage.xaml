@@ -295,49 +295,149 @@
             <!-- Right Sidebar Panel: Financial Breakdown, Advance Payment, and Save -->
             <VerticalStackLayout Grid.Column="1" Spacing="20">
 
-                <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="24">
-                    <VerticalStackLayout Spacing="18">
-                        <Label Text="BILL SUMMARY | বিল হিসাব" FontSize="16" FontAttributes="Bold" TextColor="#08294D" />
-
-                        <!-- Direct Material Cost -->
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="Material Costs:" TextColor="#64748B" FontSize="13" />
-                            <Label Grid.Column="1" Text="{Binding MaterialCostTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="13" FontAttributes="Bold" />
+                <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="22">
+                    <VerticalStackLayout Spacing="16">
+                        
+                        <!-- Header -->
+                        <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="BILL &amp; PROFIT | বিল ও লাভ হিসাব" FontSize="16" FontAttributes="Bold" TextColor="#08294D" />
+                            <Border Grid.Column="1" BackgroundColor="#E0E7FF" StrokeShape="RoundRectangle 4" Padding="6,2">
+                                <Label Text="Auto Calc" FontSize="10" FontAttributes="Bold" TextColor="#3730A3" />
+                            </Border>
                         </Grid>
 
-                        <!-- Production Cost -->
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="Production Costs:" TextColor="#64748B" FontSize="13" />
-                            <Label Grid.Column="1" Text="{Binding ProductionCostTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="13" FontAttributes="Bold" />
-                        </Grid>
+                        <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
 
-                        <!-- SubTotal -->
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="Sub Total:" TextColor="#64748B" FontSize="13" />
-                            <Label Grid.Column="1" Text="{Binding SubTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="14" FontAttributes="Bold" />
-                        </Grid>
+                        <!-- Section 1: Total Investment (বিনিয়োগ / মোট খরচ) -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="১. আমার মোট খরচ (INVESTMENT)" FontSize="11" FontAttributes="Bold" TextColor="#64748B" CharacterSpacing="0.6" />
+                            
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="• কাঁচামাল/কাগজ (Material):" TextColor="#64748B" FontSize="12" />
+                                <Label Grid.Column="1" Text="{Binding MaterialCostTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="12" FontAttributes="Bold" />
+                            </Grid>
 
-                        <!-- Discount -->
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Discount (৳)" TextColor="#64748B" FontSize="12" />
-                            <Entry Text="{Binding Discount}" Keyboard="Numeric" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="• উৎপাদন/ছাপা/বাইন্ডিং (Costs):" TextColor="#64748B" FontSize="12" />
+                                <Label Grid.Column="1" Text="{Binding ProductionCostTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="12" FontAttributes="Bold" />
+                            </Grid>
+
+                            <Border BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 6" Padding="10,6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="মোট বিনিয়োগ (Total Cost):" TextColor="#08294D" FontSize="12" FontAttributes="Bold" />
+                                    <Label Grid.Column="1" Text="{Binding TotalInvestmentFormatted}" TextColor="#08294D" FontSize="13" FontAttributes="Bold" />
+                                </Grid>
+                            </Border>
                         </VerticalStackLayout>
 
                         <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
 
-                        <!-- Total Bill -->
-                        <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="TOTAL BILL:" TextColor="#3D73B0" FontSize="16" FontAttributes="Bold" />
-                            <Label Grid.Column="1" Text="{Binding TotalBillFormatted}" TextColor="#08294D" FontSize="20" FontAttributes="Bold" />
-                        </Grid>
+                        <!-- Section 2: Customer Job Price / Work Value (কাস্টমার চুক্তি বিল) -->
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Grid.Column="0" Text="২. কাজের চুক্তি মূল্য (JOB PRICE)" FontSize="11" FontAttributes="Bold" TextColor="#3D73B0" CharacterSpacing="0.6" />
+                                <Label Grid.Column="1" Text="কাস্টমার রেট" FontSize="10" TextColor="#64748B" />
+                            </Grid>
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="6">
+                                <Border BackgroundColor="#DCE3EF" StrokeShape="RoundRectangle 6" Padding="10,0" VerticalOptions="Fill">
+                                    <Label Text="৳" TextColor="#08294D" FontAttributes="Bold" FontSize="14" VerticalOptions="Center" />
+                                </Border>
+                                <Entry Grid.Column="1" 
+                                       Text="{Binding WorkAgreedPrice}" 
+                                       Keyboard="Numeric" 
+                                       BackgroundColor="#F9F7F7" 
+                                       TextColor="#08294D" 
+                                       FontAttributes="Bold" 
+                                       FontSize="15" />
+                            </Grid>
+
+                            <!-- Quick Markup Margin Buttons -->
+                            <HorizontalStackLayout Spacing="5" Margin="0,2,0,0">
+                                <Button Text="Cost (0%)" 
+                                        Command="{Binding ResetWorkPriceToCostCommand}" 
+                                        BackgroundColor="#E2E8F0" 
+                                        TextColor="#475569" 
+                                        FontSize="10" 
+                                        FontAttributes="Bold" 
+                                        Padding="6,2" 
+                                        HeightRequest="26" 
+                                        CornerRadius="4" />
+                                <Button Text="+20%" 
+                                        Command="{Binding ApplyMarginCommand}" 
+                                        CommandParameter="20" 
+                                        BackgroundColor="#DCE3EF" 
+                                        TextColor="#08294D" 
+                                        FontSize="10" 
+                                        FontAttributes="Bold" 
+                                        Padding="6,2" 
+                                        HeightRequest="26" 
+                                        CornerRadius="4" />
+                                <Button Text="+30%" 
+                                        Command="{Binding ApplyMarginCommand}" 
+                                        CommandParameter="30" 
+                                        BackgroundColor="#DCE3EF" 
+                                        TextColor="#08294D" 
+                                        FontSize="10" 
+                                        FontAttributes="Bold" 
+                                        Padding="6,2" 
+                                        HeightRequest="26" 
+                                        CornerRadius="4" />
+                                <Button Text="+50%" 
+                                        Command="{Binding ApplyMarginCommand}" 
+                                        CommandParameter="50" 
+                                        BackgroundColor="#DCE3EF" 
+                                        TextColor="#08294D" 
+                                        FontSize="10" 
+                                        FontAttributes="Bold" 
+                                        Padding="6,2" 
+                                        HeightRequest="26" 
+                                        CornerRadius="4" />
+                            </HorizontalStackLayout>
+
+                            <!-- Discount Entry -->
+                            <Grid ColumnDefinitions="*,100" ColumnSpacing="8" Margin="0,4,0,0" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="ছাড় / Discount (৳):" TextColor="#64748B" FontSize="12" VerticalOptions="Center" />
+                                <Entry Grid.Column="1" Text="{Binding Discount}" Keyboard="Numeric" BackgroundColor="#F9F7F7" TextColor="#08294D" FontSize="12" HorizontalTextAlignment="End" />
+                            </Grid>
+
+                            <!-- Net Total Customer Bill -->
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,4,0,0">
+                                <Label Grid.Column="0" Text="কাস্টমার মোট বিল (TOTAL BILL):" TextColor="#08294D" FontSize="13" FontAttributes="Bold" />
+                                <Label Grid.Column="1" Text="{Binding TotalBillFormatted}" TextColor="#08294D" FontSize="18" FontAttributes="Bold" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- Section 3: THE MOST IMPORTANT PART - PROFIT / LOSS INSIGHT CARD -->
+                        <Border BackgroundColor="{Binding ProfitBgColor}" 
+                                Stroke="{Binding ProfitBorderColor}" 
+                                StrokeThickness="1.5" 
+                                StrokeShape="RoundRectangle 10" 
+                                Padding="14,12">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="আমার নিট লাভ (JOB PROFIT)" FontSize="11" FontAttributes="Bold" TextColor="{Binding ProfitColor}" />
+                                    <Label Grid.Column="1" Text="{Binding ProfitStatusText}" FontSize="10" FontAttributes="Bold" TextColor="{Binding ProfitColor}" />
+                                </Grid>
+
+                                <Label Text="{Binding ProfitFormatted}" 
+                                       FontSize="22" 
+                                       FontAttributes="Bold" 
+                                       TextColor="{Binding ProfitColor}" />
+
+                                <Label Text="{Binding ProfitFormulaText}" 
+                                       FontSize="11" 
+                                       TextColor="#64748B" />
+                            </VerticalStackLayout>
+                        </Border>
 
                         <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
 
-                        <!-- Advance / Initial Payment -->
-                        <Label Text="ADVANCE PAYMENT | অগ্রিম জমা" FontSize="12" FontAttributes="Bold" TextColor="#059669" />
+                        <!-- Section 4: Advance / Initial Payment -->
+                        <Label Text="৩. অগ্রিম জমা (ADVANCE PAYMENT)" FontSize="11" FontAttributes="Bold" TextColor="#059669" />
                         
                         <VerticalStackLayout Spacing="4">
-                            <Label Text="Amount (৳)" TextColor="#64748B" FontSize="12" />
+                            <Label Text="জমা টাকা / Amount (৳)" TextColor="#64748B" FontSize="11" />
                             <Entry Text="{Binding AdvancePaymentAmount}" Keyboard="Numeric" BackgroundColor="#F9F7F7" TextColor="#08294D" />
                         </VerticalStackLayout>
 
@@ -365,23 +465,23 @@
 
                         <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
 
-                        <!-- Balance Due -->
+                        <!-- Section 5: Balance Due -->
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Grid.Column="0" Text="BALANCE DUE:" TextColor="#D97706" FontSize="15" FontAttributes="Bold" />
+                            <Label Grid.Column="0" Text="বকেয়া পাওনা (DUE):" TextColor="#D97706" FontSize="14" FontAttributes="Bold" />
                             <Label Grid.Column="1" Text="{Binding BalanceDueFormatted}" TextColor="#D97706" FontSize="18" FontAttributes="Bold" />
                         </Grid>
 
                         <!-- Action Buttons -->
-                        <Button Text="💾 Commit to Ledger" 
+                        <Button Text="💾 Commit to Ledger | সংরক্ষণ করুন" 
                                 Command="{Binding SaveTransactionCommand}" 
                                 IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                                 BackgroundColor="#059669" 
                                 TextColor="#FFFFFF" 
                                 FontAttributes="Bold" 
-                                FontSize="15" 
+                                FontSize="14" 
                                 CornerRadius="8" 
-                                HeightRequest="48" 
-                                Margin="0,10,0,0" />
+                                HeightRequest="46" 
+                                Margin="0,8,0,0" />
 
                         <Button Text="← Cancel &amp; Back to Dashboard" 
                                 Clicked="OnCancelClicked" 
@@ -390,7 +490,7 @@
                                 BorderColor="#3D73B0"
                                 BorderWidth="1"
                                 CornerRadius="8" 
-                                HeightRequest="40" />
+                                HeightRequest="38" />
 
                     </VerticalStackLayout>
                 </Border>

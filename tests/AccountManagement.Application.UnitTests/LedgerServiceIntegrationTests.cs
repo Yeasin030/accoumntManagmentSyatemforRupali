@@ -255,4 +255,72 @@ public class LedgerServiceIntegrationTests
         // Assert
         result.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task CreateTransactionAsync_WithCustomAgreedWorkPrice_CalculatesInvestmentAndProfitAccurately()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext();
+        var customer = new Customer
+        {
+            Name = "Padma Packaging Ltd",
+            PhoneNumber = "01999887766",
+            OpeningBalance = 0m,
+            CurrentBalance = 0m
+        };
+        await context.Customers.AddAsync(customer);
+        await context.SaveChangesAsync();
+
+        var service = new LedgerService(context, NullLogger<LedgerService>.Instance);
+
+        // Investment: Paper (5 * 1000 = 5000) + Plate (1500) + Print (2500) = 9000
+        // Customer agreed price = 15000, Discount = 500 => Total Bill = 14500
+        // Profit = 14500 - 9000 = 5500
+        var dto = new CreateTransactionDto
+        {
+            TransactionDate = new DateOnly(2026, 10, 23),
+            CustomerId = customer.Id,
+            WorkDescription = "10,000 Medicine Carton Boxes",
+            SubTotal = 15000m,
+            Discount = 500m,
+            Items = new List<CreateTransactionItemDto>
+            {
+                new()
+                {
+                    MaterialName = "Duplex Board 300 GSM",
+                    Quantity = 5m,
+                    UnitRate = 1000m
+                }
+            },
+            CostEntries = new List<CreateCostEntryDto>
+            {
+                new()
+                {
+                    Category = CostCategory.Plate,
+                    Description = "CTP Plates",
+                    Amount = 1500m
+                },
+                new()
+                {
+                    Category = CostCategory.Printing,
+                    Description = "Offset 4-Color Printing",
+                    Amount = 2500m
+                }
+            },
+            InitialPaymentAmount = 4500m,
+            InitialPaymentMethod = PaymentMethod.Cash
+        };
+
+        // Act
+        var created = await service.CreateTransactionAsync(dto);
+
+        // Assert
+        created.Should().NotBeNull();
+        created.TotalDirectCost.Should().Be(9000m); // Total Investment
+        created.SubTotal.Should().Be(15000m);       // Agreed Job Value
+        created.TotalBillAmount.Should().Be(14500m); // Net Bill to Customer
+        created.Profit.Should().Be(5500m);          // 14500 - 9000 = 5500
+        created.ProfitMargin.Should().Be(37.9m);    // (5500 / 14500) * 100 = 37.9%
+        created.BalanceDue.Should().Be(10000m);     // 14500 - 4500 = 10000
+    }
 }

@@ -39,8 +39,8 @@ public class Transaction : BaseEntity
         
         TotalDirectCost = paperCost + productionCost;
         
-        // If subtotal is not manually overridden, it defaults to paper + markup/costs
-        if (SubTotal == 0 && Items.Count > 0)
+        // If subtotal is not manually overridden, it defaults to paper + costs
+        if (SubTotal == 0 && (Items.Count > 0 || CostEntries.Count > 0))
         {
             SubTotal = paperCost + productionCost;
         }

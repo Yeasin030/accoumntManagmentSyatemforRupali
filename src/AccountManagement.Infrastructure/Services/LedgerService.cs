@@ -101,6 +101,7 @@ public class LedgerService : ILedgerService
             TransactionDate = dto.TransactionDate,
             CustomerId = dto.CustomerId,
             WorkDescription = dto.WorkDescription,
+            SubTotal = dto.SubTotal ?? 0m,
             Discount = dto.Discount,
             Notes = dto.Notes,
             Status = TransactionStatus.Active

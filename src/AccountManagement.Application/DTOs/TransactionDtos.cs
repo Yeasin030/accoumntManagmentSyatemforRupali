@@ -21,6 +21,10 @@ public class TransactionDto
     public decimal TotalPaidAmount { get; set; }
     public decimal BalanceDue { get; set; }
 
+    // Direct Cost & Profit Calculations
+    public decimal Profit => TotalBillAmount - TotalDirectCost;
+    public decimal ProfitMargin => TotalBillAmount > 0 ? Math.Round((Profit / TotalBillAmount) * 100, 1) : 0m;
+
     public TransactionStatus Status { get; set; }
     public bool IsActive => Status == TransactionStatus.Active;
     public bool IsCancelled => Status == TransactionStatus.Cancelled;
@@ -60,6 +64,7 @@ public class CreateTransactionDto
     public DateOnly TransactionDate { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public Guid CustomerId { get; set; }
     public string WorkDescription { get; set; } = string.Empty;
+    public decimal? SubTotal { get; set; } // Customer agreed work price (before discount)
     public decimal Discount { get; set; } = 0m;
     public string? Notes { get; set; }
 

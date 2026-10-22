@@ -17,6 +17,9 @@ public class CreateTransactionValidator : AbstractValidator<CreateTransactionDto
         RuleFor(x => x.Discount)
             .GreaterThanOrEqualTo(0).WithMessage("Discount cannot be negative.");
 
+        RuleFor(x => x.SubTotal)
+            .GreaterThanOrEqualTo(0).When(x => x.SubTotal.HasValue).WithMessage("SubTotal cannot be negative.");
+
         RuleForEach(x => x.Items).SetValidator(new CreateTransactionItemValidator());
         RuleForEach(x => x.CostEntries).SetValidator(new CreateCostEntryValidator());
     }

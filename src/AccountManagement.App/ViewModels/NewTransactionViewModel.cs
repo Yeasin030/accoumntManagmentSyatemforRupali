@@ -64,12 +64,48 @@ public partial class NewTransactionViewModel : ObservableObject
     [ObservableProperty]
     private string _advancePaymentReference = string.Empty;
 
-    // Computed Totals
+    // Computed Totals & Investment Insights
     [ObservableProperty]
     private decimal _materialCostTotal = 0m;
 
     [ObservableProperty]
     private decimal _productionCostTotal = 0m;
+
+    [ObservableProperty]
+    private decimal _totalInvestment = 0m;
+
+    [ObservableProperty]
+    private string _totalInvestmentFormatted = "৳ 0.00";
+
+    [ObservableProperty]
+    private decimal _workAgreedPrice = 0m;
+
+    [ObservableProperty]
+    private bool _isCustomWorkPrice = false;
+
+    [ObservableProperty]
+    private decimal _estimatedProfit = 0m;
+
+    [ObservableProperty]
+    private decimal _profitMarginPercentage = 0m;
+
+    [ObservableProperty]
+    private string _profitFormatted = "৳ 0.00 (0.0%)";
+
+    [ObservableProperty]
+    private string _profitFormulaText = "(কাজের বিল ৳ 0 - মোট খরচ ৳ 0)";
+
+    [ObservableProperty]
+    private string _profitStatusText = "Break-even (সমান)";
+
+    [ObservableProperty]
+    private string _profitColor = "#059669";
+
+    [ObservableProperty]
+    private string _profitBgColor = "#ECFDF5";
+
+    [ObservableProperty]
+    private string _profitBorderColor = "#10B981";
 
     [ObservableProperty]
     private decimal _subTotal = 0m;
@@ -216,20 +252,99 @@ public partial class NewTransactionViewModel : ObservableObject
         RecalculateTotals();
     }
 
+    private bool _isRecalculating;
+
     public void RecalculateTotals()
     {
-        MaterialCostTotal = Items.Sum(i => i.TotalCost);
-        ProductionCostTotal = CostEntries.Sum(c => c.Amount);
-        SubTotal = MaterialCostTotal + ProductionCostTotal;
-        TotalBillAmount = Math.Max(0m, SubTotal - Discount);
-        BalanceDue = Math.Max(0m, TotalBillAmount - AdvancePaymentAmount);
+        if (_isRecalculating) return;
+        _isRecalculating = true;
+        try
+        {
+            MaterialCostTotal = Items.Sum(i => i.TotalCost);
+            ProductionCostTotal = CostEntries.Sum(c => c.Amount);
+            TotalInvestment = MaterialCostTotal + ProductionCostTotal;
+            TotalInvestmentFormatted = CurrencyFormatter.FormatBdt(TotalInvestment);
 
-        TotalBillFormatted = CurrencyFormatter.FormatBdt(TotalBillAmount);
-        BalanceDueFormatted = CurrencyFormatter.FormatBdt(BalanceDue);
+            // If user has not set a custom work price or it's zero, default to TotalInvestment
+            if (!IsCustomWorkPrice || WorkAgreedPrice <= 0m)
+            {
+                WorkAgreedPrice = TotalInvestment;
+            }
+
+            SubTotal = WorkAgreedPrice;
+            TotalBillAmount = Math.Max(0m, SubTotal - Discount);
+            BalanceDue = Math.Max(0m, TotalBillAmount - AdvancePaymentAmount);
+
+            EstimatedProfit = TotalBillAmount - TotalInvestment;
+            ProfitMarginPercentage = TotalBillAmount > 0m
+                ? Math.Round((EstimatedProfit / TotalBillAmount) * 100m, 1)
+                : 0m;
+
+            TotalBillFormatted = CurrencyFormatter.FormatBdt(TotalBillAmount);
+            BalanceDueFormatted = CurrencyFormatter.FormatBdt(BalanceDue);
+            ProfitFormulaText = $"(বিল ৳ {TotalBillAmount:N0} - খরচ ৳ {TotalInvestment:N0})";
+
+            if (EstimatedProfit > 0m)
+            {
+                ProfitFormatted = $"+ {CurrencyFormatter.FormatBdt(EstimatedProfit)} ({ProfitMarginPercentage:F1}% লাভ)";
+                ProfitStatusText = "🟢 লাভজনক কাজ (PROFIT)";
+                ProfitColor = "#059669";
+                ProfitBgColor = "#ECFDF5";
+                ProfitBorderColor = "#10B981";
+            }
+            else if (EstimatedProfit < 0m)
+            {
+                ProfitFormatted = $"- {CurrencyFormatter.FormatBdt(Math.Abs(EstimatedProfit))} ({ProfitMarginPercentage:F1}% ক্ষতি)";
+                ProfitStatusText = "🔴 লোকসান হচ্ছে (বিনিয়োগের চেয়ে কম বিল)";
+                ProfitColor = "#DC2626";
+                ProfitBgColor = "#FEF2F2";
+                ProfitBorderColor = "#EF4444";
+            }
+            else
+            {
+                ProfitFormatted = "৳ 0.00 (0.0% সমান)";
+                ProfitStatusText = "⚪ খরচে খরচে সমান (BREAK-EVEN)";
+                ProfitColor = "#64748B";
+                ProfitBgColor = "#F8FAFC";
+                ProfitBorderColor = "#CBD5E1";
+            }
+        }
+        finally
+        {
+            _isRecalculating = false;
+        }
+    }
+
+    partial void OnWorkAgreedPriceChanged(decimal value)
+    {
+        if (value > 0m && Math.Abs(value - TotalInvestment) > 0.01m)
+        {
+            IsCustomWorkPrice = true;
+        }
+        RecalculateTotals();
     }
 
     partial void OnDiscountChanged(decimal value) => RecalculateTotals();
     partial void OnAdvancePaymentAmountChanged(decimal value) => RecalculateTotals();
+
+    [RelayCommand]
+    public void ApplyMargin(string? percentStr)
+    {
+        if (decimal.TryParse(percentStr, out decimal percent))
+        {
+            IsCustomWorkPrice = true;
+            WorkAgreedPrice = Math.Round(TotalInvestment * (1m + (percent / 100m)), 0);
+            RecalculateTotals();
+        }
+    }
+
+    [RelayCommand]
+    public void ResetWorkPriceToCost()
+    {
+        IsCustomWorkPrice = false;
+        WorkAgreedPrice = TotalInvestment;
+        RecalculateTotals();
+    }
 
     public List<string> StandardPaperSizes { get; } = new()
     {
@@ -250,6 +365,8 @@ public partial class NewTransactionViewModel : ObservableObject
         CustomerPhone = string.Empty;
         SelectedCustomer = null;
         WorkDescription = string.Empty;
+        WorkAgreedPrice = 0m;
+        IsCustomWorkPrice = false;
         Discount = 0m;
         Notes = null;
         AdvancePaymentAmount = 0m;
@@ -317,6 +434,7 @@ public partial class NewTransactionViewModel : ObservableObject
                 TransactionDate = DateOnly.FromDateTime(TransactionDate),
                 CustomerId = customerId,
                 WorkDescription = WorkDescription.Trim(),
+                SubTotal = WorkAgreedPrice > 0m ? WorkAgreedPrice : null,
                 Discount = Discount,
                 Notes = Notes,
                 Items = Items
