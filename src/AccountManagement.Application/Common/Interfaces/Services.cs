@@ -39,6 +39,7 @@ public interface ICustomerService
     Task<CustomerDto?> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<CustomerDto> CreateCustomerAsync(CreateCustomerDto dto, CancellationToken cancellationToken = default);
     Task<CustomerDto> UpdateCustomerAsync(Guid id, CreateCustomerDto dto, CancellationToken cancellationToken = default);
+    Task<bool> DeleteCustomerAsync(Guid id, CancellationToken cancellationToken = default);
 }
 
 public interface IPaymentService

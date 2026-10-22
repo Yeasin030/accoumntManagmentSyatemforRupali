@@ -171,4 +171,45 @@ public partial class CustomerManagerViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Error", $"Could not save customer: {ex.Message}", "OK");
         }
     }
+
+    [RelayCommand]
+    public async Task DeleteCustomerAsync(CustomerDto? customer)
+    {
+        if (customer == null) return;
+
+        bool confirm = await Shell.Current.DisplayAlert(
+            "Confirm Delete | গ্রাহক মুছে ফেলুন",
+            $"Are you sure you want to delete '{customer.Name}'?\n\nআপনি কি নিশ্চিত যে গ্রাহক '{customer.Name}' মুছে ফেলতে চান?",
+            "Delete | মুছে ফেলুন",
+            "Cancel | বাতিল");
+
+        if (!confirm) return;
+
+        try
+        {
+            bool deleted = await _customerService.DeleteCustomerAsync(customer.Id);
+            if (deleted)
+            {
+                Customers.Remove(customer);
+
+                if (IsEditing && SelectedCustomerForEdit?.Id == customer.Id)
+                {
+                    CancelEdit();
+                }
+
+                await Shell.Current.DisplayAlert(
+                    "Deleted | মুছে ফেলা হয়েছে",
+                    $"Customer '{customer.Name}' has been removed successfully.\n(Associated ledger audit records are preserved).",
+                    "OK");
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Error", "Customer could not be deleted.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", $"Could not delete customer: {ex.Message}", "OK");
+        }
+    }
 }

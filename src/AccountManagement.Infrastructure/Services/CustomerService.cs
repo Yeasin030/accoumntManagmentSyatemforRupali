@@ -22,6 +22,7 @@ public class CustomerService : ICustomerService
     {
         var query = _context.Customers
             .Include(c => c.Transactions)
+            .Where(c => c.IsActive)
             .AsNoTracking()
             .AsQueryable();
 
@@ -144,5 +145,33 @@ public class CustomerService : ICustomerService
             IsActive = customer.IsActive,
             Notes = customer.Notes
         };
+    }
+
+    public async Task<bool> DeleteCustomerAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var customer = await _context.Customers
+            .Include(c => c.Transactions)
+            .Include(c => c.Payments)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+        if (customer == null) return false;
+
+        // If the customer has existing transactions or payment records,
+        // perform soft delete (deactivate) to protect historical accounting audit trails.
+        if (customer.Transactions.Any() || customer.Payments.Any())
+        {
+            customer.IsActive = false;
+            customer.UpdatedAt = DateTime.UtcNow;
+            _logger.LogInformation("Customer '{CustomerName}' ({CustomerId}) has associated financial records. Soft deleted/deactivated.", customer.Name, customer.Id);
+        }
+        else
+        {
+            // If the customer has no financial records, permanently remove.
+            _context.Customers.Remove(customer);
+            _logger.LogInformation("Customer '{CustomerName}' ({CustomerId}) permanently deleted.", customer.Name, customer.Id);
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
     }
 }

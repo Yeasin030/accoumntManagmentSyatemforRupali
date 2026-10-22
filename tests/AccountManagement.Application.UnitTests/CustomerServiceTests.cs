@@ -1,5 +1,6 @@
 using AccountManagement.Application.DTOs;
 using AccountManagement.Domain.Entities;
+using AccountManagement.Domain.Enums;
 using AccountManagement.Infrastructure.Persistence;
 using AccountManagement.Infrastructure.Services;
 using FluentAssertions;
@@ -130,5 +131,72 @@ public class CustomerServiceTests
         // Act 4: Empty search returns all
         var resultAll = await service.GetAllCustomersAsync();
         resultAll.Should().HaveCount(3);
+    }
+
+    [Fact]
+    public async Task DeleteCustomerAsync_WhenCustomerHasNoTransactions_PermanentlyDeletesCustomer()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext();
+        var customer = new Customer
+        {
+            Name = "Unused Customer",
+            PhoneNumber = "01500000000",
+            IsActive = true
+        };
+        await context.Customers.AddAsync(customer);
+        await context.SaveChangesAsync();
+
+        var service = new CustomerService(context, NullLogger<CustomerService>.Instance);
+
+        // Act
+        bool deleted = await service.DeleteCustomerAsync(customer.Id);
+
+        // Assert
+        deleted.Should().BeTrue();
+        var inDb = await context.Customers.FindAsync(customer.Id);
+        inDb.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task DeleteCustomerAsync_WhenCustomerHasTransactions_SoftDeletesCustomerAndExcludesFromActiveList()
+    {
+        // Arrange
+        using var context = CreateInMemoryContext();
+        var customer = new Customer
+        {
+            Name = "Active Transaction Customer",
+            PhoneNumber = "01600000000",
+            IsActive = true
+        };
+        await context.Customers.AddAsync(customer);
+
+        var transaction = new Transaction
+        {
+            Customer = customer,
+            TransactionNumber = "TRX-20261022-0001",
+            TransactionDate = new DateOnly(2026, 10, 22),
+            WorkDescription = "500 Books",
+            SubTotal = 1000m,
+            TotalBillAmount = 1000m,
+            Status = TransactionStatus.Completed
+        };
+        await context.Transactions.AddAsync(transaction);
+        await context.SaveChangesAsync();
+
+        var service = new CustomerService(context, NullLogger<CustomerService>.Instance);
+
+        // Act
+        bool deleted = await service.DeleteCustomerAsync(customer.Id);
+
+        // Assert
+        deleted.Should().BeTrue();
+        var inDb = await context.Customers.FindAsync(customer.Id);
+        inDb.Should().NotBeNull();
+        inDb!.IsActive.Should().BeFalse(); // Soft deleted
+
+        // Customer is excluded from active customer directory
+        var activeList = await service.GetAllCustomersAsync();
+        activeList.Should().NotContain(c => c.Id == customer.Id);
     }
 }
