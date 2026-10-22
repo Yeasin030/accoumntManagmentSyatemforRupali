@@ -8,7 +8,7 @@
              x:Name="PaymentExpenseViewPage"
              x:DataType="vm:PaymentExpenseViewModel"
              Title="Payments &amp; Expenses | জমা ও খরচ"
-             BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto,*" Padding="25" RowSpacing="16">
 

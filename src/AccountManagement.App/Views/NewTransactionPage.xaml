@@ -6,7 +6,7 @@
              x:Class="AccountManagement.App.Views.NewTransactionPage"
              x:DataType="vm:NewTransactionViewModel"
              Title="New Job Entry | নতুন কাজের এন্ট্রি"
-             BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <ScrollView>
         <Grid ColumnDefinitions="2*,*" Padding="25" ColumnSpacing="25">

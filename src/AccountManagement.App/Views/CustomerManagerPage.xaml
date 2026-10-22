@@ -7,7 +7,7 @@
              x:Name="CustomerPage"
              x:DataType="vm:CustomerManagerViewModel"
              Title="Customers | গ্রাহকদের তালিকা"
-             BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto,*" Padding="25" RowSpacing="16">
 
@@ -146,7 +146,7 @@
                                     <Label Grid.Column="1" Text="{Binding PhoneNumber}" TextColor="#3D73B0" FontSize="13" />
                                     <Label Grid.Column="2" Text="{Binding Address}" TextColor="#475569" FontSize="12" LineBreakMode="TailTruncation" />
                                     <Label Grid.Column="3" Text="{Binding TotalTransactionsCount}" TextColor="#64748B" FontSize="13" HorizontalTextAlignment="Center" />
-                                    <Label Grid.Column="4" Text="{Binding CurrentBalance, StringFormat='৳ {0:N2}'}" TextColor="#D97706" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="4" Text="{Binding CurrentBalance, StringFormat='৳ {0:N2}'}" TextColor="{Binding CurrentBalance, Converter={StaticResource BalanceToColorConverter}, ConverterParameter=text}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="End" />
 
                                     <!-- Edit & Delete Customer Actions -->
                                     <HorizontalStackLayout Grid.Column="5" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">

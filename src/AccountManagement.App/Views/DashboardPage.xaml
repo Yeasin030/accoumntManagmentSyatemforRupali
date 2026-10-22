@@ -6,7 +6,7 @@
              x:Class="AccountManagement.App.Views.DashboardPage"
              x:DataType="vm:DashboardViewModel"
              Title="Dashboard | ড্যাশবোর্ড"
-             BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <ScrollView>
         <VerticalStackLayout Padding="28" Spacing="24">
@@ -452,15 +452,17 @@
                                         <!-- Financial Figures -->
                                         <Label Grid.Column="3" Text="{Binding TotalBillAmount, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="End" />
                                         <Label Grid.Column="4" Text="{Binding TotalPaidAmount, StringFormat='৳ {0:N2}'}" TextColor="#059669" FontSize="13" HorizontalTextAlignment="End" />
-                                        <Label Grid.Column="5" Text="{Binding BalanceDue, StringFormat='৳ {0:N2}'}" TextColor="#D97706" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="End" />
+                                        <Label Grid.Column="5" Text="{Binding BalanceDue, StringFormat='৳ {0:N2}'}" TextColor="{Binding BalanceDue, Converter={StaticResource BalanceToColorConverter}, ConverterParameter=text}" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="End" />
 
-                                        <!-- Status Badge -->
+                                        <!-- Dynamic Status Badge -->
                                         <Border Grid.Column="6" 
-                                                BackgroundColor="#D1FAE5" 
+                                                BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=bg}" 
+                                                Stroke="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=border}"
+                                                StrokeThickness="1"
                                                 StrokeShape="RoundRectangle 6" 
                                                 Padding="8,4" 
                                                 HorizontalOptions="Center">
-                                            <Label Text="{Binding Status}" TextColor="#065F46" FontSize="10" FontAttributes="Bold" />
+                                            <Label Text="{Binding Status}" TextColor="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=text}" FontSize="10" FontAttributes="Bold" />
                                         </Border>
                                     </Grid>
                                 </Border>

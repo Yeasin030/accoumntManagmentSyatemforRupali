@@ -8,7 +8,7 @@
              x:Name="RatePage"
              x:DataType="vm:RateManagerViewModel"
              Title="Material Rates | কাগজের রেট শিট"
-             BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto,*" Padding="25" RowSpacing="20">
 

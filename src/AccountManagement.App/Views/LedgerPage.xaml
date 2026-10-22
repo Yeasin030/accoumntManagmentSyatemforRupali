@@ -7,7 +7,7 @@
              x:Name="LedgerViewPage"
              x:DataType="vm:LedgerViewModel"
              Title="Daily Ledger | জাবেদা ও খতিয়ান"
-             BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto,*,Auto" Padding="25" RowSpacing="18">
 
@@ -107,32 +107,24 @@
                                     <Label Grid.Column="3" Text="{Binding WorkDescription}" TextColor="#64748B" FontSize="12" LineBreakMode="TailTruncation" />
                                     <Label Grid.Column="4" Text="{Binding TotalBillAmount, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" HorizontalTextAlignment="End" />
                                     <Label Grid.Column="5" Text="{Binding TotalPaidAmount, StringFormat='৳ {0:N2}'}" TextColor="#059669" FontSize="12" HorizontalTextAlignment="End" />
-                                    <Label Grid.Column="6" Text="{Binding BalanceDue, StringFormat='৳ {0:N2}'}" TextColor="#D97706" FontAttributes="Bold" FontSize="12" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="6" Text="{Binding BalanceDue, StringFormat='৳ {0:N2}'}" TextColor="{Binding BalanceDue, Converter={StaticResource BalanceToColorConverter}, ConverterParameter=text}" FontAttributes="Bold" FontSize="12" HorizontalTextAlignment="End" />
 
-                                    <Border Grid.Column="7" StrokeShape="RoundRectangle 6" Padding="6,2" HorizontalOptions="Center">
-                                        <Border.Triggers>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsCancelled}" Value="True">
-                                                <Setter Property="BackgroundColor" Value="#FEE2E2" />
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Border" Binding="{Binding IsCancelled}" Value="False">
-                                                <Setter Property="BackgroundColor" Value="#D1FAE5" />
-                                            </DataTrigger>
-                                        </Border.Triggers>
-                                        <Label Text="{Binding Status}" FontSize="10" FontAttributes="Bold">
-                                            <Label.Triggers>
-                                                <DataTrigger TargetType="Label" Binding="{Binding IsCancelled}" Value="True">
-                                                    <Setter Property="TextColor" Value="#DC2626" />
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Label" Binding="{Binding IsCancelled}" Value="False">
-                                                    <Setter Property="TextColor" Value="#065F46" />
-                                                </DataTrigger>
-                                            </Label.Triggers>
-                                        </Label>
+                                    <Border Grid.Column="7" 
+                                            BackgroundColor="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=bg}" 
+                                            Stroke="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=border}"
+                                            StrokeThickness="1"
+                                            StrokeShape="RoundRectangle 6" 
+                                            Padding="8,3" 
+                                            HorizontalOptions="Center">
+                                        <Label Text="{Binding Status}" 
+                                               TextColor="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=text}" 
+                                               FontSize="10" 
+                                               FontAttributes="Bold" />
                                     </Border>
 
                                     <!-- Action Buttons: Cancel and Delete -->
-                                    <HorizontalStackLayout Grid.Column="8" Spacing="4" HorizontalOptions="Center" VerticalOptions="Center">
-                                        <Button Text="Cancel" 
+                                    <HorizontalStackLayout Grid.Column="8" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Button Text="✕ Cancel" 
                                                 Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.CancelTransactionCommand}"
                                                 CommandParameter="{Binding .}"
                                                 IsVisible="{Binding CanCancel}"
@@ -140,9 +132,9 @@
                                                 TextColor="#B45309" 
                                                 FontSize="10" 
                                                 FontAttributes="Bold"
-                                                Padding="6,2" 
+                                                Padding="8,3" 
                                                 HeightRequest="28" 
-                                                CornerRadius="4" />
+                                                CornerRadius="6" />
 
                                         <Button Text="🗑 Del" 
                                                 Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.DeleteTransactionCommand}"
@@ -151,9 +143,9 @@
                                                 TextColor="#DC2626" 
                                                 FontSize="10" 
                                                 FontAttributes="Bold"
-                                                Padding="6,2" 
+                                                Padding="8,3" 
                                                 HeightRequest="28" 
-                                                CornerRadius="4" />
+                                                CornerRadius="6" />
                                     </HorizontalStackLayout>
                                 </Grid>
                             </Border>

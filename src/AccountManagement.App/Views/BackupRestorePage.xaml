@@ -5,7 +5,7 @@
              x:Class="AccountManagement.App.Views.BackupRestorePage"
              x:DataType="vm:BackupRestoreViewModel"
              Title="Backup &amp; Security | ব্যাকআপ ও সুরক্ষা"
-            BackgroundColor="#F9F7F7">
+             BackgroundColor="#F8FAFC">
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="25" MaximumWidthRequest="800" HorizontalOptions="Center">

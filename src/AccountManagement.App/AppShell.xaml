@@ -5,53 +5,92 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:AccountManagement.App.Views"
     Shell.FlyoutBehavior="Flyout"
-    FlyoutWidth="280"
+    FlyoutWidth="290"
     BackgroundColor="#08294D"
     FlyoutBackgroundColor="#08294D"
     Title="Rupali Account Management System">
 
     <Shell.FlyoutHeader>
-        <VerticalStackLayout Padding="20,24,20,16" BackgroundColor="#08294D" Spacing="10">
+        <VerticalStackLayout Padding="20,24,20,16" BackgroundColor="#061F3B" Spacing="12">
+            <!-- Brand Logo & Company Titles -->
             <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                <Border Stroke="#3D73B0" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="2" HeightRequest="56" WidthRequest="56" BackgroundColor="#FFFFFF" HorizontalOptions="Center" VerticalOptions="Center">
-                    <Image Source="rupali_logo.png" Aspect="AspectFit" HeightRequest="52" WidthRequest="52" />
+                <Border Stroke="#3D73B0" 
+                        StrokeThickness="1.5" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="3" 
+                        HeightRequest="56" 
+                        WidthRequest="56" 
+                        BackgroundColor="#FFFFFF" 
+                        HorizontalOptions="Center" 
+                        VerticalOptions="Center">
+                    <Image Source="rupali_logo.png" Aspect="AspectFit" HeightRequest="50" WidthRequest="50" />
                 </Border>
                 <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                    <Label Text="রূপালী একাউন্টস" FontSize="16" FontAttributes="Bold" TextColor="#FFFFFF" />
-                    <Label Text="RUPALI ACCOUNT" FontSize="11" FontAttributes="Bold" TextColor="#34D399" CharacterSpacing="0.8" />
-                    <Label Text="Press &amp; Packaging ERP" FontSize="10" TextColor="#DCE3EF" />
+                    <Label Text="রূপালী প্রেস অ্যান্ড প্যাকেজিং" FontSize="14" FontAttributes="Bold" TextColor="#FFFFFF" />
+                    <Label Text="RUPALI ACCOUNT ERP" FontSize="11" FontAttributes="Bold" TextColor="#34D399" CharacterSpacing="1" />
+                    <Label Text="Printing &amp; Box Packaging" FontSize="10" TextColor="#94A3B8" />
                 </VerticalStackLayout>
             </HorizontalStackLayout>
-            <BoxView HeightRequest="1" BackgroundColor="#1E3A8A" Margin="0,6,0,0" />
+
+            <!-- Status Indicator Pill -->
+            <Border BackgroundColor="#0B2B50" 
+                    Stroke="#1E4E80" 
+                    StrokeThickness="1" 
+                    StrokeShape="RoundRectangle 6" 
+                    Padding="10,4" 
+                    HorizontalOptions="Start">
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Label Text="●" FontSize="10" TextColor="#10B981" VerticalOptions="Center" />
+                    <Label Text="SYSTEM ONLINE • LOCALHOST" FontSize="10" FontAttributes="Bold" TextColor="#DCE3EF" CharacterSpacing="0.6" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <BoxView HeightRequest="1" BackgroundColor="#1E3A8A" Margin="0,4,0,0" />
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Dashboard | ড্যাশবোর্ড" Route="DashboardPage">
+    <FlyoutItem Title="📊  ড্যাশবোর্ড • Dashboard" Route="DashboardPage">
         <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Daily Ledger | জাবেদা ও খতিয়ান" Route="LedgerPage">
+    <FlyoutItem Title="📑  দৈনিক খতিয়ান • Daily Ledger" Route="LedgerPage">
         <ShellContent ContentTemplate="{DataTemplate views:LedgerPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="+ New Job | নতুন এন্ট্রি" Route="NewTransactionPage">
+    <FlyoutItem Title="➕  নতুন কাজ • New Job Order" Route="NewTransactionPage">
         <ShellContent ContentTemplate="{DataTemplate views:NewTransactionPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Material Rates | রেট শিট" Route="RateManagerPage">
+    <FlyoutItem Title="🏷️  রেট শিট • Material Rates" Route="RateManagerPage">
         <ShellContent ContentTemplate="{DataTemplate views:RateManagerPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Customers | গ্রাহকদের হিসাব" Route="CustomerManagerPage">
+    <FlyoutItem Title="👥  গ্রাহক খতিয়ান • Customer Accounts" Route="CustomerManagerPage">
         <ShellContent ContentTemplate="{DataTemplate views:CustomerManagerPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Payments &amp; Expenses | জমা ও খরচ" Route="PaymentExpensePage">
+    <FlyoutItem Title="💳  জমা ও খরচ • Payments &amp; Expenses" Route="PaymentExpensePage">
         <ShellContent ContentTemplate="{DataTemplate views:PaymentExpensePage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Backup &amp; Security | ব্যাকআপ" Route="BackupRestorePage">
+    <FlyoutItem Title="🛡️  ব্যাকআপ ও নিরাপত্তা • Backup &amp; Security" Route="BackupRestorePage">
         <ShellContent ContentTemplate="{DataTemplate views:BackupRestorePage}" />
     </FlyoutItem>
+
+    <Shell.FlyoutFooter>
+        <VerticalStackLayout Padding="20,16" BackgroundColor="#061F3B" Spacing="8">
+            <BoxView HeightRequest="1" BackgroundColor="#1E3A8A" Margin="0,0,0,6" />
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10" VerticalOptions="Center">
+                <Border Stroke="#3D73B0" StrokeThickness="1" StrokeShape="RoundRectangle 16" HeightRequest="32" WidthRequest="32" BackgroundColor="#08294D" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="👤" FontSize="14" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                </Border>
+                <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                    <Label Text="Administrator" FontSize="12" FontAttributes="Bold" TextColor="#FFFFFF" />
+                    <Label Text="Single-User Desktop" FontSize="10" TextColor="#94A3B8" />
+                </VerticalStackLayout>
+            </Grid>
+            <Label Text="Rupali ERP v1.0.4 • Windows Edition" FontSize="9" TextColor="#64748B" Margin="0,4,0,0" />
+        </VerticalStackLayout>
+    </Shell.FlyoutFooter>
 
 </Shell>

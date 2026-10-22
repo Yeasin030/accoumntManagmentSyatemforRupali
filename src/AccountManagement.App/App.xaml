@@ -13,6 +13,8 @@
 
             <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:StatusToColorConverter x:Key="StatusToColorConverter" />
+            <converters:BalanceToColorConverter x:Key="BalanceToColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
