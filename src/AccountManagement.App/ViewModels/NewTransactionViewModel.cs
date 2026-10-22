@@ -160,6 +160,60 @@ public partial class NewTransactionViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    public void AddQuickCost(string type)
+    {
+        var costVm = new CostEntryViewModel(this);
+        costVm.PropertyChanged += (s, e) => RecalculateTotals();
+        switch (type?.ToLowerInvariant())
+        {
+            case "single_plate":
+                costVm.Category = CostCategory.Plate;
+                costVm.Description = "Single Plate (সিঙ্গেল প্লেট)";
+                costVm.Amount = 70m;
+                break;
+            case "full_plate":
+                costVm.Category = CostCategory.Plate;
+                costVm.Description = "Full Plate (ফুল প্লেট)";
+                costVm.Amount = 140m;
+                break;
+            case "demy_plate":
+                costVm.Category = CostCategory.Plate;
+                costVm.Description = "Demy Plate (ডিমাই প্লেট)";
+                costVm.Amount = 200m;
+                break;
+            case "print_1color":
+                costVm.Category = CostCategory.Printing;
+                costVm.Description = "Printing 1-Color / 1000 Pcs (১ কালার ছাপা)";
+                costVm.Amount = 150m;
+                break;
+            case "print_2color":
+                costVm.Category = CostCategory.Printing;
+                costVm.Description = "Printing 2-Color / 1000 Pcs (২ কালার ছাপা)";
+                costVm.Amount = 300m;
+                break;
+            case "print_3color":
+                costVm.Category = CostCategory.Printing;
+                costVm.Description = "Printing 3-Color / 1000 Pcs (৩ কালার ছাপা)";
+                costVm.Amount = 450m;
+                break;
+            case "print_4color":
+                costVm.Category = CostCategory.Printing;
+                costVm.Description = "Printing 4-Color / 1000 Pcs (৪ কালার ছাপা)";
+                costVm.Amount = 600m;
+                break;
+            case "cashmemo_binding":
+                costVm.Category = CostCategory.Binding;
+                costVm.Description = "Cash Memo 2-Part (ক্যাশ মেমো ২পারা ১টি বই)";
+                costVm.Amount = 12m;
+                break;
+            default:
+                break;
+        }
+        CostEntries.Add(costVm);
+        RecalculateTotals();
+    }
+
     public void RecalculateTotals()
     {
         MaterialCostTotal = Items.Sum(i => i.TotalCost);

@@ -215,8 +215,19 @@
                     <VerticalStackLayout Spacing="14">
                         <Grid ColumnDefinitions="*,Auto">
                             <Label Grid.Column="0" Text="PRODUCTION &amp; FINISHING COSTS | ছাপা ও বাঁধাই খরচ" FontSize="12" FontAttributes="Bold" TextColor="#08294D" CharacterSpacing="1" />
-                            <Button Grid.Column="1" Text="+ Add Cost Entry" Command="{Binding AddCostEntryCommand}" BackgroundColor="#DCE3EF" TextColor="#08294D" BorderColor="#3D73B0" BorderWidth="1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="12,4" HeightRequest="32" />
+                            <Button Grid.Column="1" Text="+ Custom Cost" Command="{Binding AddCostEntryCommand}" BackgroundColor="#DCE3EF" TextColor="#08294D" BorderColor="#3D73B0" BorderWidth="1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="12,4" HeightRequest="32" />
                         </Grid>
+
+                        <!-- Quick Presets from Rate Card (প্লেট, ছাপা, বাইন্ডিং) -->
+                        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center">
+                            <Button Text="+ সিঙ্গেল প্লেট (৭০৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="single_plate" BackgroundColor="#E0F2FE" TextColor="#0369A1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                            <Button Text="+ ফুল প্লেট (১৪০৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="full_plate" BackgroundColor="#E0F2FE" TextColor="#0369A1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                            <Button Text="+ ডিমাই প্লেট (২০০৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="demy_plate" BackgroundColor="#E0F2FE" TextColor="#0369A1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                            <Button Text="+ ১ কালার ছাপা (১৫০৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="print_1color" BackgroundColor="#DCFCE7" TextColor="#15803D" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                            <Button Text="+ ২ কালার ছাপা (৩০০৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="print_2color" BackgroundColor="#DCFCE7" TextColor="#15803D" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                            <Button Text="+ ৪ কালার ছাপা (৬০০৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="print_4color" BackgroundColor="#DCFCE7" TextColor="#15803D" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                            <Button Text="+ ক্যাশ মেমো বাইন্ডিং (১২৳)" Command="{Binding AddQuickCostCommand}" CommandParameter="cashmemo_binding" BackgroundColor="#F3E8FF" TextColor="#7E22CE" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="8,4" HeightRequest="28" Margin="0,0,6,6" />
+                        </FlexLayout>
 
                         <CollectionView ItemsSource="{Binding CostEntries}">
                             <CollectionView.ItemTemplate>

@@ -211,30 +211,34 @@ public class DatabaseSeeder
             .Where(r => r.RatePeriodId == period.Id)
             .ToListAsync(cancellationToken);
 
-        // List of all paper items with Base Rate for 18/23 (1000 Pcs / 2 Reams)
-        var paperRates = new List<(string Name, decimal BaseRate)>
+        // Exact rate card table matching the physical printing press rate card:
+        // (MaterialName, Rate18x23_1000, Rate9x14, Rate9x11_5, Rate7_5x10, Rate7_5x9)
+        var exactPaperTable = new List<(string Name, decimal R18x23, decimal R9x14, decimal R9x11_5, decimal R7_5x10, decimal R7_5x9)>
         {
-            ("Art Paper 150 GSM", 6000m),
-            ("Art Paper 120 GSM", 4650m),
-            ("Art Paper 100 GSM", 3950m),
-            ("Art Paper 80 GSM", 3420m),
+            // Art Paper
+            ("Art Paper 150 GSM",    6000m, 2033m, 1500m,   1212m, 1016m),
+            ("Art Paper 120 GSM",    4650m, 1576m, 1162.5m, 939m,  788m),
+            ("Art Paper 100 GSM",    3950m, 1338m, 987.5m,  797m,  669m),
+            ("Art Paper 80 GSM",     3420m, 1159m, 855m,    684m,  579m),
 
-            ("Offset Paper 120 GSM", 4880m),
-            ("Offset Paper 100 GSM", 3960m),
-            ("Offset Paper 80 GSM", 3140m),
-            ("Offset Paper 70 GSM", 2780m),
-            ("Offset Paper 65 GSM", 2620m),
-            ("Offset Paper 61 GSM", 2500m),
-            ("Offset Paper 55 GSM", 2150m),
-            ("News Paper", 1100m),
-            ("Colour Paper", 2300m),
+            // Offset Paper
+            ("Offset Paper 120 GSM", 4880m, 1654m, 1220m,   986m,  827m),
+            ("Offset Paper 100 GSM", 3960m, 1342m, 990m,    735m,  671m),
+            ("Offset Paper 80 GSM",  3140m, 1064m, 785m,    587m,  532m),
+            ("Offset Paper 70 GSM",  2780m, 942m,  695m,    525m,  471m),
+            ("Offset Paper 65 GSM",  2620m, 888m,  655m,    505m,  444m),
+            ("Offset Paper 61 GSM",  2500m, 847m,  625m,    500m,  423m),
+            ("Offset Paper 55 GSM",  2150m, 728m,  537.5m,  430m,  364m),
+            ("News Paper",            1100m, 372m,  290m,    220m,  186m),
+            ("Colour Paper",          2300m, 793m,  575m,    460m,  389m),
 
-            ("Bashundhara Carbon", 3000m),
-            ("China Carbon", 3650m)
+            // Auto Carbon
+            ("Bashundhara Carbon",    3000m, 1016m, 750m,    600m,  508m),
+            ("China Carbon",          3650m, 1237m, 912.5m,  730m,  618m)
         };
 
-        // Standard cut sizes: (Size, Unit, Divisor, Tier, Remarks)
-        foreach (var (matName, baseRate) in paperRates)
+        // Standard cut sizes: (Size, Unit, Exact Rate, Tier, Remarks)
+        foreach (var (matName, r18x23, r9x14, r9x11_5, r7_5x10, r7_5x9) in exactPaperTable)
         {
             var mat = materials.FirstOrDefault(m => m.Name.Equals(matName, StringComparison.OrdinalIgnoreCase));
             if (mat == null) continue;
@@ -242,17 +246,17 @@ public class DatabaseSeeder
             var sizeVariants = new List<(string Size, UnitOfMeasure Unit, decimal Rate, decimal Tier, string Remarks)>
             {
                 // Ream rate (1 Ream = 500 sheets = half of 1000 pcs)
-                ("18/23", UnitOfMeasure.Ream, Math.Round(baseRate / 2m, 2), 1m, "Per Ream (500 sheets)"),
+                ("18/23", UnitOfMeasure.Ream, Math.Round(r18x23 / 2m, 2), 1m, "Per Ream (500 sheets)"),
                 // 18/23: 1000 Pcs base rate
-                ("18/23", UnitOfMeasure.Piece, baseRate, 1000m, "1000 Pcs (2 Reams) Base Demy"),
-                // 9/14: 3 cuts with trim (divisor 2.95). 80 GSM Offset is 1064 (correcting typo 106)
-                ("9/14", UnitOfMeasure.Piece, Math.Round(baseRate / 2.95m, 0), 1000m, "1000 Pcs (3-cut with trim)"),
-                // 9/11.5: 4 cuts exact (divisor 4.0).
-                ("9/11.5", UnitOfMeasure.Piece, Math.Round(baseRate / 4.0m, 2), 1000m, "1000 Pcs (4-cut / Quarter Demy)"),
-                // 7.5/10: 5 cuts (divisor 5.0, or 4.90-4.95 with trim). 120 GSM Offset formatted to 996
-                ("7.5/10", UnitOfMeasure.Piece, Math.Round(baseRate / 4.95m, 0), 1000m, "1000 Pcs (5-cut)"),
-                // 7.5/9: 6 cuts with trim (divisor 5.9)
-                ("7.5/9", UnitOfMeasure.Piece, Math.Round(baseRate / 5.9m, 0), 1000m, "1000 Pcs (6-cut with trim)")
+                ("18/23", UnitOfMeasure.Piece, r18x23, 1000m, "1000 Pcs (2 Reams) Base Demy"),
+                // 9/14: 1000 Pcs
+                ("9/14", UnitOfMeasure.Piece, r9x14, 1000m, "1000 Pcs (3-cut with trim)"),
+                // 9/11.5: 1000 Pcs (Quarter Demy)
+                ("9/11.5", UnitOfMeasure.Piece, r9x11_5, 1000m, "1000 Pcs (4-cut / Quarter Demy)"),
+                // 7.5/10: 1000 Pcs
+                ("7.5/10", UnitOfMeasure.Piece, r7_5x10, 1000m, "1000 Pcs (5-cut)"),
+                // 7.5/9: 1000 Pcs
+                ("7.5/9", UnitOfMeasure.Piece, r7_5x9, 1000m, "1000 Pcs (6-cut with trim)")
             };
 
             foreach (var (sz, u, rate, tier, remarks) in sizeVariants)
