@@ -10,6 +10,7 @@ namespace AccountManagement.App.ViewModels;
 public partial class DashboardViewModel : ObservableObject
 {
     private readonly IDashboardService _dashboardService;
+    private readonly IMemoService _memoService;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -74,9 +75,32 @@ public partial class DashboardViewModel : ObservableObject
 
     public ObservableCollection<TransactionDto> RecentTransactions { get; } = new();
 
-    public DashboardViewModel(IDashboardService dashboardService)
+    public DashboardViewModel(IDashboardService dashboardService, IMemoService memoService)
     {
         _dashboardService = dashboardService;
+        _memoService = memoService;
+    }
+
+    [RelayCommand]
+    public async Task PrintMemoAsync(TransactionDto? transaction)
+    {
+        if (transaction == null) return;
+
+        try
+        {
+            var html = await _memoService.GenerateTransactionMemoHtmlAsync(transaction.Id);
+            var filePath = await _memoService.SaveMemoHtmlToFileAsync(html, $"Memo_{transaction.TransactionNumber}.html");
+
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = filePath,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Memo Notice", $"Could not launch memo: {ex.Message}", "OK");
+        }
     }
 
     [RelayCommand]

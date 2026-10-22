@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
              xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
              x:Class="AccountManagement.App.Views.DashboardPage"
+             x:Name="DashboardViewPage"
              x:DataType="vm:DashboardViewModel"
              Title="Dashboard | ড্যাশবোর্ড"
              BackgroundColor="#F8FAFC">
@@ -386,7 +387,7 @@
 
                     <!-- Table Column Header -->
                     <Border BackgroundColor="#DCE3EF" StrokeShape="RoundRectangle 8" Padding="14,10">
-                        <Grid ColumnDefinitions="120,130,*,130,120,120,100">
+                        <Grid ColumnDefinitions="110,120,*,120,110,110,90,90">
                             <Label Grid.Column="0" Text="DATE / তারিখ" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                             <Label Grid.Column="1" Text="JOB NO / চালান" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                             <Label Grid.Column="2" Text="CUSTOMER &amp; WORK / গ্রাহক ও বিবরণ" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
@@ -394,6 +395,7 @@
                             <Label Grid.Column="4" Text="PAID (৳) / জমা" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
                             <Label Grid.Column="5" Text="DUE (৳) / বকেয়া" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
                             <Label Grid.Column="6" Text="STATUS / অবস্থা" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
+                            <Label Grid.Column="7" Text="MEMO" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
                         </Grid>
                     </Border>
 
@@ -434,7 +436,7 @@
                                         Padding="14,12" 
                                         Margin="0,2" 
                                         BackgroundColor="#FFFFFF">
-                                    <Grid ColumnDefinitions="120,130,*,130,120,120,100" VerticalOptions="Center">
+                                    <Grid ColumnDefinitions="110,120,*,120,110,110,90,90" VerticalOptions="Center">
                                         <!-- Date -->
                                         <Label Grid.Column="0" Text="{Binding TransactionDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#475569" FontSize="12" />
 
@@ -464,6 +466,20 @@
                                                 HorizontalOptions="Center">
                                             <Label Text="{Binding Status}" TextColor="{Binding Status, Converter={StaticResource StatusToColorConverter}, ConverterParameter=text}" FontSize="10" FontAttributes="Bold" />
                                         </Border>
+
+                                        <!-- Action: Print Memo Button -->
+                                        <Button Grid.Column="7"
+                                                Text="📄 Memo" 
+                                                Command="{Binding Source={x:Reference DashboardViewPage}, Path=BindingContext.PrintMemoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#E0E7FF" 
+                                                TextColor="#3730A3" 
+                                                FontSize="10" 
+                                                FontAttributes="Bold"
+                                                Padding="8,2" 
+                                                HeightRequest="28" 
+                                                CornerRadius="6"
+                                                HorizontalOptions="Center" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

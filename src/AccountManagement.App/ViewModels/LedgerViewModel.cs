@@ -11,6 +11,7 @@ public partial class LedgerViewModel : ObservableObject
 {
     private readonly ILedgerService _ledgerService;
     private readonly ICustomerService _customerService;
+    private readonly IMemoService _memoService;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -56,10 +57,11 @@ public partial class LedgerViewModel : ObservableObject
     public ObservableCollection<TransactionDto> Transactions { get; } = new();
     public ObservableCollection<CustomerDto> Customers { get; } = new();
 
-    public LedgerViewModel(ILedgerService ledgerService, ICustomerService customerService)
+    public LedgerViewModel(ILedgerService ledgerService, ICustomerService customerService, IMemoService memoService)
     {
         _ledgerService = ledgerService;
         _customerService = customerService;
+        _memoService = memoService;
 
         // Default to current month date range
         var today = DateTime.Today;
@@ -235,6 +237,27 @@ public partial class LedgerViewModel : ObservableObject
         catch (Exception ex)
         {
             await Shell.Current.DisplayAlert("Error", $"Could not delete transaction: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    public async Task PrintMemoAsync(TransactionDto? transaction)
+    {
+        if (transaction == null) return;
+
+        try
+        {
+            string html = await _memoService.GenerateTransactionMemoHtmlAsync(transaction.Id);
+            string filePath = await _memoService.SaveMemoHtmlToFileAsync(html, $"Memo_{transaction.TransactionNumber}");
+
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(filePath)
+            {
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Memo Error | ত্রুটি", $"Could not generate cash memo: {ex.Message}", "OK");
         }
     }
 }

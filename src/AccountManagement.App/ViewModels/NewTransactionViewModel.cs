@@ -13,6 +13,7 @@ public partial class NewTransactionViewModel : ObservableObject
     private readonly ILedgerService _ledgerService;
     private readonly ICustomerService _customerService;
     private readonly IRateService _rateService;
+    private readonly IMemoService _memoService;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -90,11 +91,12 @@ public partial class NewTransactionViewModel : ObservableObject
     public ObservableCollection<TransactionLineItemViewModel> Items { get; } = new();
     public ObservableCollection<CostEntryViewModel> CostEntries { get; } = new();
 
-    public NewTransactionViewModel(ILedgerService ledgerService, ICustomerService customerService, IRateService rateService)
+    public NewTransactionViewModel(ILedgerService ledgerService, ICustomerService customerService, IRateService rateService, IMemoService memoService)
     {
         _ledgerService = ledgerService;
         _customerService = customerService;
         _rateService = rateService;
+        _memoService = memoService;
     }
 
     [RelayCommand]
@@ -344,8 +346,31 @@ public partial class NewTransactionViewModel : ObservableObject
 
             var created = await _ledgerService.CreateTransactionAsync(dto);
 
+            bool printMemo = await Shell.Current.DisplayAlert(
+                "Transaction Saved | সফল",
+                $"Job {created.TransactionNumber} saved successfully!\n\nDo you want to print / view the Customer Cash Memo now?\nকাস্টমার ক্যাশ মেমো প্রিন্ট করবেন?",
+                "Print Memo (হ্যাঁ)",
+                "Later (পরে)");
+
+            if (printMemo)
+            {
+                try
+                {
+                    var html = await _memoService.GenerateTransactionMemoHtmlAsync(created.Id);
+                    var filePath = await _memoService.SaveMemoHtmlToFileAsync(html, $"Memo_{created.TransactionNumber}.html");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = filePath,
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    await Shell.Current.DisplayAlert("Memo Notice", $"Could not launch memo: {ex.Message}", "OK");
+                }
+            }
+
             ResetForm();
-            await Shell.Current.DisplayAlert("Success | সফল", $"Transaction {created.TransactionNumber} saved successfully!", "OK");
             await Shell.Current.GoToAsync("//LedgerPage");
         }
         catch (Exception ex)

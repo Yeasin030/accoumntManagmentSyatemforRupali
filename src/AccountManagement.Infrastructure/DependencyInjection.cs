@@ -75,6 +75,7 @@ public static class DependencyInjection
         services.AddScoped<IExpenseService, ExpenseService>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IBackupService, PostgreSqlBackupService>();
+        services.AddScoped<IMemoService, MemoService>();
 
         return services;
     }

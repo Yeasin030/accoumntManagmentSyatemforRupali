@@ -9,6 +9,7 @@ namespace AccountManagement.App.ViewModels;
 public partial class CustomerManagerViewModel : ObservableObject
 {
     private readonly ICustomerService _customerService;
+    private readonly IMemoService _memoService;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -57,9 +58,10 @@ public partial class CustomerManagerViewModel : ObservableObject
 
     public ObservableCollection<CustomerDto> Customers { get; } = new();
 
-    public CustomerManagerViewModel(ICustomerService customerService)
+    public CustomerManagerViewModel(ICustomerService customerService, IMemoService memoService)
     {
         _customerService = customerService;
+        _memoService = memoService;
     }
 
     [RelayCommand]
@@ -210,6 +212,29 @@ public partial class CustomerManagerViewModel : ObservableObject
         catch (Exception ex)
         {
             await Shell.Current.DisplayAlert("Error", $"Could not delete customer: {ex.Message}", "OK");
+        }
+    }
+
+    [RelayCommand]
+    public async Task PrintStatementAsync(CustomerDto? customer)
+    {
+        if (customer == null) return;
+
+        try
+        {
+            var html = await _memoService.GenerateCustomerStatementMemoHtmlAsync(customer.Id);
+            var safeName = string.Join("_", customer.Name.Split(Path.GetInvalidFileNameChars()));
+            var filePath = await _memoService.SaveMemoHtmlToFileAsync(html, $"Statement_{safeName}_{DateTime.Now:yyyyMMdd}.html");
+
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = filePath,
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Statement Error", $"Could not generate customer statement: {ex.Message}", "OK");
         }
     }
 }

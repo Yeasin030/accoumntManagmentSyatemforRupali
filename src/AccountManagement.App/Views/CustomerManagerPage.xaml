@@ -116,7 +116,7 @@
                 </Grid>
 
                 <!-- Table Header -->
-                <Grid Grid.Row="1" ColumnDefinitions="2*,120,*,60,110,150" BackgroundColor="#DCE3EF" Padding="16,12">
+                <Grid Grid.Row="1" ColumnDefinitions="2*,120,*,60,110,220" BackgroundColor="#DCE3EF" Padding="16,12">
                     <Label Grid.Column="0" Text="NAME &amp; CONTACT" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                     <Label Grid.Column="1" Text="PHONE" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                     <Label Grid.Column="2" Text="ADDRESS" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
@@ -138,7 +138,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:CustomerDto">
                             <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="16,12" BackgroundColor="#FFFFFF">
-                                <Grid ColumnDefinitions="2*,120,*,60,110,150" VerticalOptions="Center">
+                                <Grid ColumnDefinitions="2*,120,*,60,110,220" VerticalOptions="Center">
                                     <VerticalStackLayout Grid.Column="0" Spacing="2">
                                         <Label Text="{Binding Name}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
                                         <Label Text="{Binding ContactPerson}" TextColor="#64748B" FontSize="11" />
@@ -148,8 +148,19 @@
                                     <Label Grid.Column="3" Text="{Binding TotalTransactionsCount}" TextColor="#64748B" FontSize="13" HorizontalTextAlignment="Center" />
                                     <Label Grid.Column="4" Text="{Binding CurrentBalance, StringFormat='৳ {0:N2}'}" TextColor="{Binding CurrentBalance, Converter={StaticResource BalanceToColorConverter}, ConverterParameter=text}" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="End" />
 
-                                    <!-- Edit & Delete Customer Actions -->
+                                    <!-- Statement Memo, Edit & Delete Customer Actions -->
                                     <HorizontalStackLayout Grid.Column="5" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Button Text="📄 Memo" 
+                                                Command="{Binding Source={x:Reference CustomerPage}, Path=BindingContext.PrintStatementCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#E0E7FF" 
+                                                TextColor="#3730A3" 
+                                                FontSize="11" 
+                                                FontAttributes="Bold"
+                                                Padding="8,2" 
+                                                HeightRequest="30" 
+                                                CornerRadius="6" />
+
                                         <Button Text="✎ Edit" 
                                                 Command="{Binding Source={x:Reference CustomerPage}, Path=BindingContext.SelectForEditCommand}"
                                                 CommandParameter="{Binding .}"

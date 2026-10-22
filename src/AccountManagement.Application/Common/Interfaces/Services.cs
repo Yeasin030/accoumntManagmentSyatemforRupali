@@ -67,3 +67,11 @@ public interface IBackupService
     Task<string> CreateBackupAsync(string destinationDirectory, CancellationToken cancellationToken = default);
     Task<bool> RestoreBackupAsync(string backupFilePath, CancellationToken cancellationToken = default);
 }
+
+public interface IMemoService
+{
+    Task<string> GenerateTransactionMemoHtmlAsync(Guid transactionId, CancellationToken cancellationToken = default);
+    Task<string> GenerateCustomerStatementMemoHtmlAsync(Guid customerId, DateOnly? fromDate = null, DateOnly? toDate = null, CancellationToken cancellationToken = default);
+    Task<string> SaveMemoHtmlToFileAsync(string htmlContent, string fileNamePrefix, CancellationToken cancellationToken = default);
+}
+

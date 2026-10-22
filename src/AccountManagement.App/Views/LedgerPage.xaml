@@ -75,7 +75,7 @@
             <Grid RowDefinitions="Auto,*">
 
                 <!-- Table Header -->
-                <Grid Grid.Row="0" ColumnDefinitions="105,115,160,*,100,100,100,85,140" BackgroundColor="#DCE3EF" Padding="16,12">
+                <Grid Grid.Row="0" ColumnDefinitions="100,110,150,*,95,95,95,80,210" BackgroundColor="#DCE3EF" Padding="16,12">
                     <Label Grid.Column="0" Text="DATE" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                     <Label Grid.Column="1" Text="JOB NO" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
                     <Label Grid.Column="2" Text="CUSTOMER" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
@@ -100,7 +100,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="dto:TransactionDto">
                             <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="16,12" BackgroundColor="#FFFFFF">
-                                <Grid ColumnDefinitions="105,115,160,*,100,100,100,85,140" VerticalOptions="Center">
+                                <Grid ColumnDefinitions="100,110,150,*,95,95,95,80,210" VerticalOptions="Center">
                                     <Label Grid.Column="0" Text="{Binding TransactionDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#475569" FontSize="12" />
                                     <Label Grid.Column="1" Text="{Binding TransactionNumber}" TextColor="#3D73B0" FontAttributes="Bold" FontSize="12" />
                                     <Label Grid.Column="2" Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" LineBreakMode="TailTruncation" />
@@ -122,8 +122,19 @@
                                                FontAttributes="Bold" />
                                     </Border>
 
-                                    <!-- Action Buttons: Cancel and Delete -->
+                                    <!-- Action Buttons: Memo, Cancel, and Delete -->
                                     <HorizontalStackLayout Grid.Column="8" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Button Text="📄 Memo" 
+                                                Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.PrintMemoCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="#E0E7FF" 
+                                                TextColor="#3730A3" 
+                                                FontSize="10" 
+                                                FontAttributes="Bold"
+                                                Padding="8,3" 
+                                                HeightRequest="28" 
+                                                CornerRadius="6" />
+
                                         <Button Text="✕ Cancel" 
                                                 Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.CancelTransactionCommand}"
                                                 CommandParameter="{Binding .}"
