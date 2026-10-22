@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
+             x:Class="AccountManagement.App.Views.CustomerManagerPage"
+             x:DataType="vm:CustomerManagerViewModel"
+             Title="Customers | গ্রাহকদের তালিকা"
+             BackgroundColor="#F9F7F7">
+
+    <Grid RowDefinitions="Auto,*" Padding="25" RowSpacing="16">
+
+        <!-- Top Header Bar with Back Button -->
+        <Border Grid.Row="0" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="18,14">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalOptions="Center">
+                <Button Grid.Column="0" 
+                        Text="← Back to Dashboard | ড্যাশবোর্ড" 
+                        Clicked="OnBackClicked" 
+                        BackgroundColor="#DCE3EF" 
+                        TextColor="#08294D" 
+                        BorderColor="#3D73B0" 
+                        BorderWidth="1" 
+                        CornerRadius="8" 
+                        Padding="14,8" 
+                        FontSize="12" 
+                        FontAttributes="Bold" />
+                <Label Grid.Column="1" Text="Customer Directory &amp; Accounts | গ্রাহক খতিয়ান ও তালিকা" FontSize="20" FontAttributes="Bold" TextColor="#08294D" VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" ColumnDefinitions="360,*" ColumnSpacing="20">
+
+        <!-- Left: Add/Edit Customer Form Card -->
+        <Border Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+            <ScrollView>
+                <VerticalStackLayout Spacing="14">
+                    <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="{Binding FormTitleText}" FontSize="16" FontAttributes="Bold" TextColor="#08294D" VerticalOptions="Center" />
+                        <Button Grid.Column="1" 
+                                Text="✕ Cancel" 
+                                Command="{Binding CancelEditCommand}" 
+                                IsVisible="{Binding IsEditing}" 
+                                BackgroundColor="#FEE2E2" 
+                                TextColor="#DC2626" 
+                                FontSize="11" 
+                                CornerRadius="6" 
+                                HeightRequest="28" 
+                                Padding="8,0" />
+                    </Grid>
+
+                    <!-- Name -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Customer / Business Name *" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewCustomerName}" Placeholder="e.g. Al-Madina Press" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Contact Person -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Contact Person" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewContactPerson}" Placeholder="e.g. Md. Rafiqul Islam" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Phone Number -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Phone Number (Mobile)" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewPhoneNumber}" Placeholder="017xxxxxxxx" Keyboard="Telephone" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Email -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Email Address" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewEmail}" Placeholder="client@example.com" Keyboard="Email" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Address -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Office / Delivery Address" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewAddress}" Placeholder="Dhaka, Bangladesh" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Opening Balance -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Opening Balance (৳)" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewOpeningBalance}" Keyboard="Numeric" Placeholder="0.00" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Notes -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Notes" FontSize="12" TextColor="#64748B" />
+                        <Entry Text="{Binding NewNotes}" Placeholder="Special instructions..." BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Submit Button -->
+                    <Button Text="{Binding SaveButtonText}" 
+                            Command="{Binding SaveCustomerCommand}" 
+                            BackgroundColor="#059669" 
+                            TextColor="#FFFFFF" 
+                            FontAttributes="Bold" 
+                            CornerRadius="8" 
+                            HeightRequest="44" 
+                            Margin="0,8,0,0" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- Right: Customers Directory Table with Search -->
+        <Border Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12">
+            <Grid RowDefinitions="Auto,Auto,*" Padding="20" RowSpacing="14">
+
+                <!-- Header & Search -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,250" VerticalOptions="Center">
+                    <Label Grid.Column="0" Text="Customer Accounts Directory | গ্রাহকদের হিসাব" FontSize="20" FontAttributes="Bold" TextColor="#08294D" />
+                    <Entry Grid.Column="1" Text="{Binding SearchTerm}" Placeholder="🔍 Search customer..." BackgroundColor="#F9F7F7" TextColor="#08294D" PlaceholderColor="#64748B" />
+                </Grid>
+
+                <!-- Table Header -->
+                <Grid Grid.Row="1" ColumnDefinitions="2*,130,*,70,120,Auto" BackgroundColor="#DCE3EF" Padding="16,12">
+                    <Label Grid.Column="0" Text="NAME &amp; CONTACT" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="1" Text="PHONE" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="2" Text="ADDRESS" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="3" Text="JOBS" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="4" Text="DUE (৳)" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                    <Label Grid.Column="5" Text="ACTION" FontSize="11" FontAttributes="Bold" TextColor="#08294D" Margin="14,0,0,0" />
+                </Grid>
+
+                <!-- Customer Items -->
+                <CollectionView Grid.Row="2" ItemsSource="{Binding Customers}">
+                    <CollectionView.EmptyView>
+                        <Label Text="No customers found. Add your first customer using the form on the left." 
+                               TextColor="#64748B" 
+                               HorizontalTextAlignment="Center" 
+                               VerticalTextAlignment="Center" 
+                               Padding="60" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:CustomerDto">
+                            <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="16,12" BackgroundColor="#FFFFFF">
+                                <Grid ColumnDefinitions="2*,130,*,70,120,Auto" VerticalOptions="Center">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Name}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
+                                        <Label Text="{Binding ContactPerson}" TextColor="#64748B" FontSize="11" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding PhoneNumber}" TextColor="#3D73B0" FontSize="13" />
+                                    <Label Grid.Column="2" Text="{Binding Address}" TextColor="#475569" FontSize="12" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="3" Text="{Binding TotalTransactionsCount}" TextColor="#64748B" FontSize="13" HorizontalTextAlignment="Center" />
+                                    <Label Grid.Column="4" Text="{Binding CurrentBalance, StringFormat='৳ {0:N2}'}" TextColor="#D97706" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="End" />
+
+                                    <!-- Edit Customer Action -->
+                                    <Button Grid.Column="5" 
+                                            Text="✎ Edit" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CustomerManagerViewModel}}, Path=SelectForEditCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#DCE3EF" 
+                                            TextColor="#08294D" 
+                                            FontSize="11" 
+                                            FontAttributes="Bold"
+                                            Padding="8,2" 
+                                            HeightRequest="30" 
+                                            CornerRadius="6" 
+                                            Margin="10,0,0,0" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Border>
+
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,14 @@
+## Visual Studio & .NET Core
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+appsettings.Development.json
+TestResults/
+*.sha256
+*.db

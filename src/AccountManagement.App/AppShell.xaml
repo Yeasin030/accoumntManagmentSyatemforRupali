@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="AccountManagement.App.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:AccountManagement.App.Views"
+    Shell.FlyoutBehavior="Flyout"
+    FlyoutWidth="280"
+    BackgroundColor="#08294D"
+    FlyoutBackgroundColor="#08294D"
+    Title="Rupali Account Management System">
+
+    <Shell.FlyoutHeader>
+        <VerticalStackLayout Padding="24,30,24,20" BackgroundColor="#08294D" Spacing="6">
+            <Label Text="RUPALI ACCOUNT" FontSize="18" FontAttributes="Bold" TextColor="#FFFFFF" CharacterSpacing="1" />
+            <Label Text="Press &amp; Packaging ERP" FontSize="12" TextColor="#DCE3EF" />
+            <BoxView HeightRequest="2" BackgroundColor="#3D73B0" Margin="0,15,0,0" />
+        </VerticalStackLayout>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Dashboard | ড্যাশবোর্ড" Route="DashboardPage">
+        <ShellContent ContentTemplate="{DataTemplate views:DashboardPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Daily Ledger | জাবেদা ও খতিয়ান" Route="LedgerPage">
+        <ShellContent ContentTemplate="{DataTemplate views:LedgerPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="+ New Job | নতুন এন্ট্রি" Route="NewTransactionPage">
+        <ShellContent ContentTemplate="{DataTemplate views:NewTransactionPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Material Rates | রেট শিট" Route="RateManagerPage">
+        <ShellContent ContentTemplate="{DataTemplate views:RateManagerPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Customers | গ্রাহকদের হিসাব" Route="CustomerManagerPage">
+        <ShellContent ContentTemplate="{DataTemplate views:CustomerManagerPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Payments &amp; Expenses | জমা ও খরচ" Route="PaymentExpensePage">
+        <ShellContent ContentTemplate="{DataTemplate views:PaymentExpensePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Backup &amp; Security | ব্যাকআপ" Route="BackupRestorePage">
+        <ShellContent ContentTemplate="{DataTemplate views:BackupRestorePage}" />
+    </FlyoutItem>
+
+</Shell>

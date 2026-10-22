@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
+             x:Class="AccountManagement.App.Views.DashboardPage"
+             x:DataType="vm:DashboardViewModel"
+             Title="Dashboard | ড্যাশবোর্ড"
+             BackgroundColor="#F9F7F7">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28" Spacing="24">
+
+            <!-- Executive Hero Banner -->
+            <Border BackgroundColor="#08294D" 
+                    Stroke="#3D73B0" 
+                    StrokeThickness="1.5" 
+                    StrokeShape="RoundRectangle 16" 
+                    Padding="26,20">
+                <Grid ColumnDefinitions="*,Auto" RowSpacing="10" VerticalOptions="Center">
+                    <!-- Left: Titles and Live Status Badges -->
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                            <Label Text="রূপালী প্রেস অ্যান্ড প্যাকেজিং" 
+                                   FontSize="24" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#FFFFFF" />
+                            <Border BackgroundColor="#3D73B0" 
+                                    Stroke="#DCE3EF" 
+                                    StrokeShape="RoundRectangle 6" 
+                                    Padding="8,3" 
+                                    VerticalOptions="Center">
+                                <Label Text="RUPALI ACCOUNT ERP" 
+                                       FontSize="10" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#FFFFFF" 
+                                       CharacterSpacing="1" />
+                            </Border>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Commercial Printing &amp; Box Packaging Management System | হিসাব ও খতিয়ান ব্যবস্থাপনা" 
+                               FontSize="13" 
+                               TextColor="#DCE3EF" />
+
+                        <!-- Metadata Badges -->
+                        <HorizontalStackLayout Spacing="10" Margin="0,4,0,0">
+                            <!-- Live Date Badge -->
+                            <Border BackgroundColor="#0E3866" Stroke="#3D73B0" StrokeShape="RoundRectangle 6" Padding="10,4">
+                                <Label Text="{Binding CurrentDateText, StringFormat='📅 {0}'}" FontSize="11" TextColor="#FFFFFF" FontAttributes="Bold" />
+                            </Border>
+
+                            <!-- Storage Status Badge -->
+                            <Border BackgroundColor="#0E3866" Stroke="#3D73B0" StrokeShape="RoundRectangle 6" Padding="10,4">
+                                <Label Text="{Binding DatabaseModeText}" FontSize="11" TextColor="#DCE3EF" FontAttributes="Bold" />
+                            </Border>
+
+                            <!-- User Mode -->
+                            <Border BackgroundColor="#0E3866" Stroke="#3D73B0" StrokeShape="RoundRectangle 6" Padding="10,4">
+                                <Label Text="👤 Single-User Desktop Edition" FontSize="11" TextColor="#DCE3EF" />
+                            </Border>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Right: Quick Action Buttons -->
+                    <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                        <Button Text="🔄 Refresh" 
+                                Command="{Binding LoadDashboardCommand}"
+                                BackgroundColor="#0E3866" 
+                                TextColor="#FFFFFF" 
+                                BorderColor="#3D73B0"
+                                BorderWidth="1"
+                                CornerRadius="8" 
+                                FontSize="13"
+                                Padding="14,10" />
+
+                        <Button Text="💰 Receive Payment" 
+                                Clicked="OnReceivePaymentClicked"
+                                BackgroundColor="#3D73B0" 
+                                TextColor="#FFFFFF" 
+                                CornerRadius="8" 
+                                FontSize="13"
+                                FontAttributes="Bold"
+                                Padding="16,10" />
+
+                        <Button Text="+ New Job Order" 
+                                Clicked="OnNewJobOrderClicked"
+                                BackgroundColor="#059669" 
+                                TextColor="#FFFFFF" 
+                                FontAttributes="Bold" 
+                                CornerRadius="8" 
+                                FontSize="13"
+                                Padding="18,10" />
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Error Banner (if any) -->
+            <Border IsVisible="{Binding ErrorMessage, Converter={StaticResource StringToBoolConverter}}"
+                    BackgroundColor="#FEE2E2"
+                    Stroke="#DC2626"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="16,12">
+                <Label Text="{Binding ErrorMessage}" TextColor="#991B1B" FontSize="13" />
+            </Border>
+
+            <!-- 4 Top Executive KPI Cards -->
+            <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="16">
+
+                <!-- Card 1: Today's Sales -->
+                <Border Grid.Column="0" 
+                        BackgroundColor="#FFFFFF" 
+                        Stroke="#059669" 
+                        StrokeThickness="1.5" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="18">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="TODAY'S SALES | আজকের বিক্রয়" FontSize="11" FontAttributes="Bold" TextColor="#059669" CharacterSpacing="0.8" />
+                            <Border Grid.Column="1" BackgroundColor="#D1FAE5" StrokeShape="RoundRectangle 4" Padding="6,2">
+                                <Label Text="{Binding TodayTransactionCount, StringFormat='{0} Jobs'}" FontSize="10" FontAttributes="Bold" TextColor="#065F46" />
+                            </Border>
+                        </Grid>
+
+                        <Label Text="{Binding TodayRevenueFormatted}" FontSize="26" FontAttributes="Bold" TextColor="#08294D" Margin="0,4,0,2" />
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Grid.Column="0" Text="Collected Today: " FontSize="12" TextColor="#64748B" />
+                            <Label Grid.Column="1" Text="{Binding TodayPaymentsFormatted}" FontSize="12" FontAttributes="Bold" TextColor="#059669" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Card 2: Total Outstanding Customer Due -->
+                <Border Grid.Column="1" 
+                        BackgroundColor="#FFFFFF" 
+                        Stroke="#D97706" 
+                        StrokeThickness="1.5" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="18">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="TOTAL DUE | মোট বকেয়া পাওনা" FontSize="11" FontAttributes="Bold" TextColor="#D97706" CharacterSpacing="0.8" />
+                            <Border Grid.Column="1" BackgroundColor="#FEF3C7" StrokeShape="RoundRectangle 4" Padding="6,2">
+                                <Label Text="{Binding ActiveCustomerCount, StringFormat='{0} Clients'}" FontSize="10" FontAttributes="Bold" TextColor="#92400E" />
+                            </Border>
+                        </Grid>
+
+                        <Label Text="{Binding TotalOutstandingDueFormatted}" FontSize="26" FontAttributes="Bold" TextColor="#D97706" Margin="0,4,0,2" />
+
+                        <Label Text="Pending collection from accounts" FontSize="12" TextColor="#64748B" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Card 3: Month Sales / Turnover -->
+                <Border Grid.Column="2" 
+                        BackgroundColor="#FFFFFF" 
+                        Stroke="#3D73B0" 
+                        StrokeThickness="1.5" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="18">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="MONTH SALES | চলতি মাসের বিক্রয়" FontSize="11" FontAttributes="Bold" TextColor="#3D73B0" CharacterSpacing="0.8" />
+                        <Label Text="{Binding MonthRevenueFormatted}" FontSize="26" FontAttributes="Bold" TextColor="#08294D" Margin="0,4,0,2" />
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Grid.Column="0" Text="Direct Costs: " FontSize="12" TextColor="#64748B" />
+                            <Label Grid.Column="1" Text="{Binding MonthDirectCostsFormatted}" FontSize="12" FontAttributes="Bold" TextColor="#475569" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Card 4: Month Net Profit -->
+                <Border Grid.Column="3" 
+                        BackgroundColor="#FFFFFF" 
+                        Stroke="#08294D" 
+                        StrokeThickness="1.5" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="18">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="NET PROFIT | মাসিক নিট লাভ" FontSize="11" FontAttributes="Bold" TextColor="#08294D" CharacterSpacing="0.8" />
+                            <Border Grid.Column="1" BackgroundColor="#DCE3EF" StrokeShape="RoundRectangle 4" Padding="6,2">
+                                <Label Text="{Binding ProfitMarginFormatted}" FontSize="10" FontAttributes="Bold" TextColor="#08294D" />
+                            </Border>
+                        </Grid>
+
+                        <Label Text="{Binding MonthNetProfitFormatted}" FontSize="26" FontAttributes="Bold" TextColor="#08294D" Margin="0,4,0,2" />
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Label Grid.Column="0" Text="Gross Profit: " FontSize="12" TextColor="#64748B" />
+                            <Label Grid.Column="1" Text="{Binding MonthGrossProfitFormatted}" FontSize="12" FontAttributes="Bold" TextColor="#475569" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+            </Grid>
+
+            <!-- Mid Section: Daily Cashflow Breakdown + Quick Control Center -->
+            <Grid ColumnDefinitions="3*,2*" ColumnSpacing="20">
+
+                <!-- Left Panel: Daily Cashflow Register -->
+                <Border Grid.Column="0" 
+                        BackgroundColor="#FFFFFF" 
+                        Stroke="#DCE3EF" 
+                        StrokeThickness="1" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="22">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="আজকের নগদ ক্যাশ প্রবাহ | Daily Cashflow Register" FontSize="15" FontAttributes="Bold" TextColor="#08294D" />
+                                <Label Text="Track physical cash &amp; digital collections vs daily workshop expenses" FontSize="11" TextColor="#64748B" />
+                            </VerticalStackLayout>
+
+                            <Button Grid.Column="1" 
+                                    Text="+ Record Transaction" 
+                                    Clicked="OnReceivePaymentClicked" 
+                                    BackgroundColor="#DCE3EF" 
+                                    TextColor="#08294D" 
+                                    FontAttributes="Bold"
+                                    FontSize="11" 
+                                    Padding="12,6" 
+                                    CornerRadius="6" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
+
+                        <!-- 3-Tier Financial Flow Rows -->
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                            <!-- Collections In -->
+                            <Border Grid.Column="0" BackgroundColor="#F0FDF4" Stroke="#BBF7D0" StrokeShape="RoundRectangle 8" Padding="14">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="TOTAL RECEIVED (আদায়)" FontSize="10" FontAttributes="Bold" TextColor="#059669" />
+                                    <Label Text="{Binding TodayPaymentsFormatted}" FontSize="18" FontAttributes="Bold" TextColor="#059669" />
+                                    <Label Text="Inflow from customers" FontSize="10" TextColor="#64748B" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Expenses Out -->
+                            <Border Grid.Column="1" BackgroundColor="#FFF1F2" Stroke="#FECDD3" StrokeShape="RoundRectangle 8" Padding="14">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="EXPENSES (কারখানা খরচ)" FontSize="10" FontAttributes="Bold" TextColor="#E11D48" />
+                                    <Label Text="{Binding TodayExpensesFormatted}" FontSize="18" FontAttributes="Bold" TextColor="#E11D48" />
+                                    <Label Text="Factory bills, tea, fare" FontSize="10" TextColor="#64748B" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Net Balance -->
+                            <Border Grid.Column="2" BackgroundColor="#F9F7F7" Stroke="#3D73B0" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="14">
+                                <VerticalStackLayout Spacing="6">
+                                    <Label Text="NET SURPLUS (আজকের উদ্বৃত্ত)" FontSize="10" FontAttributes="Bold" TextColor="#3D73B0" />
+                                    <Label Text="{Binding TodayNetCashFormatted}" FontSize="18" FontAttributes="Bold" TextColor="#08294D" />
+                                    <Label Text="Net cash in hand" FontSize="10" TextColor="#64748B" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Right Panel: Operations & Shortcuts -->
+                <Border Grid.Column="1" 
+                        BackgroundColor="#FFFFFF" 
+                        Stroke="#DCE3EF" 
+                        StrokeThickness="1" 
+                        StrokeShape="RoundRectangle 14" 
+                        Padding="22">
+                    <VerticalStackLayout Spacing="14">
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="ব্যবসা পরিচালনা | Control Center" FontSize="15" FontAttributes="Bold" TextColor="#08294D" />
+                            <Label Text="Instant access to master rate sheets, client accounts, and security" FontSize="11" TextColor="#64748B" />
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
+
+                        <!-- 2x2 Interactive Tiles with TapGestureRecognizer -->
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="*,*" ColumnSpacing="12" RowSpacing="12">
+                            <!-- Rate Sheet Tile -->
+                            <Border Grid.Row="0" Grid.Column="0" 
+                                    BackgroundColor="#F9F7F7" 
+                                    Stroke="#DCE3EF" 
+                                    StrokeThickness="1" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    Padding="14,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnManageRatesClicked" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                                    <Label Text="📜 Rate Sheet" FontAttributes="Bold" TextColor="#08294D" FontSize="13" />
+                                    <Label Text="কাগজের দর তালিকা" TextColor="#64748B" FontSize="11" />
+                                    <Label Text="{Binding TotalMaterialCount, StringFormat='{0} Presets Active'}" TextColor="#3D73B0" FontSize="10" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Customer Directory Tile -->
+                            <Border Grid.Row="0" Grid.Column="1" 
+                                    BackgroundColor="#F9F7F7" 
+                                    Stroke="#DCE3EF" 
+                                    StrokeThickness="1" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    Padding="14,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnViewCustomersClicked" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                                    <Label Text="👥 Customer Directory" FontAttributes="Bold" TextColor="#08294D" FontSize="13" />
+                                    <Label Text="গ্রাহকদের খতিয়ান" TextColor="#64748B" FontSize="11" />
+                                    <Label Text="{Binding ActiveCustomerCount, StringFormat='{0} Accounts'}" TextColor="#059669" FontSize="10" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Full Ledger Tile -->
+                            <Border Grid.Row="1" Grid.Column="0" 
+                                    BackgroundColor="#F9F7F7" 
+                                    Stroke="#DCE3EF" 
+                                    StrokeThickness="1" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    Padding="14,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnViewFullLedgerClicked" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                                    <Label Text="📘 Complete Ledger" FontAttributes="Bold" TextColor="#08294D" FontSize="13" />
+                                    <Label Text="সকল কাজের জাবেদা" TextColor="#64748B" FontSize="11" />
+                                    <Label Text="View all records →" TextColor="#D97706" FontSize="10" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Backup Tile -->
+                            <Border Grid.Row="1" Grid.Column="1" 
+                                    BackgroundColor="#F9F7F7" 
+                                    Stroke="#DCE3EF" 
+                                    StrokeThickness="1" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    Padding="14,12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnBackupRestoreClicked" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                                    <Label Text="🛡️ Security &amp; Backup" FontAttributes="Bold" TextColor="#08294D" FontSize="13" />
+                                    <Label Text="ডাটাবেজ ব্যাকআপ" TextColor="#64748B" FontSize="11" />
+                                    <Label Text="Export archive →" TextColor="#3D73B0" FontSize="10" FontAttributes="Bold" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+            </Grid>
+
+            <!-- Recent Ledger Transactions Section -->
+            <Border BackgroundColor="#FFFFFF" 
+                    Stroke="#DCE3EF" 
+                    StrokeThickness="1" 
+                    StrokeShape="RoundRectangle 14" 
+                    Padding="24">
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="সাম্প্রতিক চালান ও কাজের খতিয়ান | Recent Job Orders" FontSize="18" FontAttributes="Bold" TextColor="#08294D" />
+                            <Label Text="Latest printing, packaging, and plate-making transactions recorded" FontSize="12" TextColor="#64748B" />
+                        </VerticalStackLayout>
+
+                        <Button Grid.Column="1" 
+                                Text="View Complete Ledger →" 
+                                Clicked="OnViewFullLedgerClicked" 
+                                BackgroundColor="Transparent" 
+                                TextColor="#3D73B0" 
+                                FontAttributes="Bold" 
+                                FontSize="13" />
+                    </Grid>
+
+                    <!-- Table Column Header -->
+                    <Border BackgroundColor="#DCE3EF" StrokeShape="RoundRectangle 8" Padding="14,10">
+                        <Grid ColumnDefinitions="120,130,*,130,120,120,100">
+                            <Label Grid.Column="0" Text="DATE / তারিখ" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                            <Label Grid.Column="1" Text="JOB NO / চালান" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                            <Label Grid.Column="2" Text="CUSTOMER &amp; WORK / গ্রাহক ও বিবরণ" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                            <Label Grid.Column="3" Text="BILL (৳) / মোট" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="4" Text="PAID (৳) / জমা" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="5" Text="DUE (৳) / বকেয়া" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                            <Label Grid.Column="6" Text="STATUS / অবস্থা" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Rows -->
+                    <CollectionView ItemsSource="{Binding RecentTransactions}">
+                        <CollectionView.EmptyView>
+                            <Border BackgroundColor="#F9F7F7" Stroke="#DCE3EF" StrokeShape="RoundRectangle 8" Padding="35" Margin="0,10">
+                                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                                    <Label Text="📋" FontSize="36" HorizontalTextAlignment="Center" />
+                                    <Label Text="No transactions recorded yet | এখনো কোনো লেনদেন এন্ট্রি করা হয়নি।" 
+                                           TextColor="#08294D" 
+                                           FontSize="14" 
+                                           FontAttributes="Bold" 
+                                           HorizontalTextAlignment="Center" />
+                                    <Label Text="Click '+ New Job Order' above to create your first client bill or paper invoice." 
+                                           TextColor="#64748B" 
+                                           FontSize="12" 
+                                           HorizontalTextAlignment="Center" />
+                                    <Button Text="+ Create First Job Order" 
+                                            Clicked="OnNewJobOrderClicked" 
+                                            BackgroundColor="#059669" 
+                                            TextColor="#FFFFFF" 
+                                            FontSize="12" 
+                                            FontAttributes="Bold" 
+                                            CornerRadius="6" 
+                                            Padding="16,8" 
+                                            HorizontalOptions="Center" 
+                                            Margin="0,8,0,0" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="dto:TransactionDto">
+                                <Border Stroke="#DCE3EF" 
+                                        StrokeThickness="1" 
+                                        StrokeShape="RoundRectangle 6" 
+                                        Padding="14,12" 
+                                        Margin="0,2" 
+                                        BackgroundColor="#FFFFFF">
+                                    <Grid ColumnDefinitions="120,130,*,130,120,120,100" VerticalOptions="Center">
+                                        <!-- Date -->
+                                        <Label Grid.Column="0" Text="{Binding TransactionDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#475569" FontSize="12" />
+
+                                        <!-- Job Number -->
+                                        <Border Grid.Column="1" BackgroundColor="#DCE3EF" Stroke="#3D73B0" StrokeThickness="0.5" StrokeShape="RoundRectangle 4" Padding="6,3" HorizontalOptions="Start">
+                                            <Label Text="{Binding TransactionNumber}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" />
+                                        </Border>
+
+                                        <!-- Customer Name & Work Description -->
+                                        <VerticalStackLayout Grid.Column="2" Spacing="2" Padding="6,0">
+                                            <Label Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
+                                            <Label Text="{Binding WorkDescription}" TextColor="#64748B" FontSize="11" LineBreakMode="TailTruncation" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Financial Figures -->
+                                        <Label Grid.Column="3" Text="{Binding TotalBillAmount, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="End" />
+                                        <Label Grid.Column="4" Text="{Binding TotalPaidAmount, StringFormat='৳ {0:N2}'}" TextColor="#059669" FontSize="13" HorizontalTextAlignment="End" />
+                                        <Label Grid.Column="5" Text="{Binding BalanceDue, StringFormat='৳ {0:N2}'}" TextColor="#D97706" FontAttributes="Bold" FontSize="13" HorizontalTextAlignment="End" />
+
+                                        <!-- Status Badge -->
+                                        <Border Grid.Column="6" 
+                                                BackgroundColor="#D1FAE5" 
+                                                StrokeShape="RoundRectangle 6" 
+                                                Padding="8,4" 
+                                                HorizontalOptions="Center">
+                                            <Label Text="{Binding Status}" TextColor="#065F46" FontSize="10" FontAttributes="Bold" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AccountManagement.App/AccountManagement.App.csproj" />
+    <Project Path="src/AccountManagement.Application/AccountManagement.Application.csproj" />
+    <Project Path="src/AccountManagement.Domain/AccountManagement.Domain.csproj" />
+    <Project Path="src/AccountManagement.Infrastructure/AccountManagement.Infrastructure.csproj" />
+    <Project Path="tests/AccountManagement.Application.UnitTests/AccountManagement.Application.UnitTests.csproj" />
+    <Project Path="tests/AccountManagement.Domain.UnitTests/AccountManagement.Domain.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
+             xmlns:enums="clr-namespace:AccountManagement.Domain.Enums;assembly=AccountManagement.Domain"
+             x:Class="AccountManagement.App.Views.RateManagerPage"
+             x:Name="RatePage"
+             x:DataType="vm:RateManagerViewModel"
+             Title="Material Rates | কাগজের রেট শিট"
+             BackgroundColor="#F9F7F7">
+
+    <Grid RowDefinitions="Auto,*" Padding="25" RowSpacing="20">
+
+        <!-- Top Header & Rate Entry Card -->
+        <Border Grid.Row="0" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+            <VerticalStackLayout Spacing="16">
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="14" VerticalOptions="Center">
+                    <Button Grid.Column="0" 
+                            Text="← Back to Dashboard | ড্যাশবোর্ড" 
+                            Clicked="OnBackClicked" 
+                            BackgroundColor="#DCE3EF" 
+                            TextColor="#08294D" 
+                            BorderColor="#3D73B0" 
+                            BorderWidth="1" 
+                            CornerRadius="8" 
+                            Padding="14,8" 
+                            FontSize="12" 
+                            FontAttributes="Bold" />
+                    <Label Grid.Column="1" Text="Material Rates Management | কাগজের রেট শিট" FontSize="20" FontAttributes="Bold" TextColor="#08294D" VerticalOptions="Center" />
+                    
+                    <!-- Rate Period Selector -->
+                    <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                        <Label Text="Active Period:" TextColor="#64748B" FontSize="13" VerticalOptions="Center" />
+                        <Picker ItemsSource="{Binding RatePeriods}"
+                                SelectedItem="{Binding SelectedPeriod}"
+                                ItemDisplayBinding="{Binding Name}"
+                                BackgroundColor="#F9F7F7"
+                                TextColor="#08294D"
+                                WidthRequest="180" />
+                    </HorizontalStackLayout>
+
+                    <Button Grid.Column="3" Text="+ New Period" Command="{Binding CreateNewPeriodCommand}" BackgroundColor="#059669" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="8" Margin="10,0,0,0" Padding="14,0" HeightRequest="40" />
+                </Grid>
+
+                <!-- Quick Add / Update Rate Form -->
+                <Grid ColumnDefinitions="2*,*,1.4*,*,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+
+                    <!-- Material -->
+                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Label Text="Material *" FontSize="11" TextColor="#64748B" />
+                        <Picker ItemsSource="{Binding Materials}"
+                                SelectedItem="{Binding SelectedMaterial}"
+                                ItemDisplayBinding="{Binding Name}"
+                                Title="Pick Material..."
+                                BackgroundColor="#F9F7F7"
+                                TextColor="#08294D"
+                                TitleColor="#64748B" />
+                    </VerticalStackLayout>
+
+                    <!-- GSM -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="GSM Specification" FontSize="11" TextColor="#64748B" />
+                        <Entry Text="{Binding Gsm}" Placeholder="e.g. 80 GSM" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Size -->
+                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                        <Label Text="Paper Size" FontSize="11" TextColor="#64748B" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                            <Entry Grid.Column="0" Text="{Binding Size}" Placeholder="e.g. 18/23" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                            <Picker Grid.Column="1"
+                                    ItemsSource="{Binding StandardPaperSizes}"
+                                    SelectedItem="{Binding Size}"
+                                    Title="Preset"
+                                    BackgroundColor="#DCE3EF"
+                                    TextColor="#08294D"
+                                    WidthRequest="95" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Rate Per Unit -->
+                    <VerticalStackLayout Grid.Column="3" Spacing="4">
+                        <Label Text="Rate per Unit (৳) *" FontSize="11" TextColor="#64748B" />
+                        <Entry Text="{Binding RatePerUnit}" Keyboard="Numeric" Placeholder="0.00" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <!-- Unit -->
+                    <VerticalStackLayout Grid.Column="4" Spacing="4">
+                        <Label Text="Unit" FontSize="11" TextColor="#64748B" />
+                        <Picker SelectedItem="{Binding Unit}" BackgroundColor="#F9F7F7" TextColor="#08294D">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type enums:UnitOfMeasure}">
+                                    <enums:UnitOfMeasure>Ream</enums:UnitOfMeasure>
+                                    <enums:UnitOfMeasure>Piece</enums:UnitOfMeasure>
+                                    <enums:UnitOfMeasure>Sheet</enums:UnitOfMeasure>
+                                    <enums:UnitOfMeasure>Packet</enums:UnitOfMeasure>
+                                    <enums:UnitOfMeasure>Dosta</enums:UnitOfMeasure>
+                                    <enums:UnitOfMeasure>Kg</enums:UnitOfMeasure>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </VerticalStackLayout>
+
+                    <!-- Save Rate Button -->
+                    <Button Grid.Column="5" Text="Save Rate" Command="{Binding SaveRateCommand}" BackgroundColor="#3D73B0" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="8" HeightRequest="42" VerticalOptions="End" Padding="18,0" />
+                </Grid>
+
+                <Label Text="{Binding StatusMessage}" TextColor="#059669" FontSize="12" IsVisible="{Binding StatusMessage, Converter={StaticResource StringToBoolConverter}}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Current Rates Table -->
+        <Border Grid.Row="1" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12">
+            <Grid RowDefinitions="Auto,*">
+
+                <!-- Table Header -->
+                <Grid Grid.Row="0" ColumnDefinitions="2*,90,100,80,120,*,90" BackgroundColor="#DCE3EF" Padding="16,12">
+                    <Label Grid.Column="0" Text="MATERIAL &amp; CATEGORY" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="1" Text="GSM" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="2" Text="SIZE" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="3" Text="UNIT" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="4" Text="RATE PER UNIT (৳)" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                    <Label Grid.Column="5" Text="REMARKS" FontSize="11" FontAttributes="Bold" TextColor="#08294D" Margin="20,0,0,0" />
+                    <Label Grid.Column="6" Text="ACTION" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
+                </Grid>
+
+                <!-- Table Items -->
+                <CollectionView Grid.Row="1" ItemsSource="{Binding CurrentRates}">
+                    <CollectionView.EmptyView>
+                        <Label Text="No rates defined for the selected period. Add rates using the form above." 
+                               TextColor="#64748B" 
+                               HorizontalTextAlignment="Center" 
+                               VerticalTextAlignment="Center" 
+                               Padding="60" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:MaterialRateDto">
+                            <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="16,12" BackgroundColor="#FFFFFF">
+                                <Grid ColumnDefinitions="2*,90,100,80,120,*,90" VerticalOptions="Center">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding MaterialName}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
+                                        <Label Text="{Binding CategoryName}" TextColor="#3D73B0" FontSize="11" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="1" Text="{Binding Gsm}" TextColor="#475569" FontSize="13" />
+                                    <Label Grid.Column="2" Text="{Binding Size}" TextColor="#475569" FontSize="13" />
+                                    <Label Grid.Column="3" Text="{Binding Unit}" TextColor="#64748B" FontSize="13" />
+                                    <Label Grid.Column="4" Text="{Binding RatePerUnit, StringFormat='৳ {0:N2}'}" TextColor="#059669" FontAttributes="Bold" FontSize="14" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="5" Text="{Binding Remarks}" TextColor="#64748B" FontSize="12" Margin="20,0,0,0" LineBreakMode="TailTruncation" />
+                                    <Button Grid.Column="6" 
+                                            Text="✎ Edit" 
+                                            Command="{Binding Source={x:Reference RatePage}, Path=BindingContext.SelectRateCommand}" 
+                                            CommandParameter="{Binding .}" 
+                                            BackgroundColor="#DCE3EF" 
+                                            TextColor="#08294D" 
+                                            FontAttributes="Bold" 
+                                            FontSize="11" 
+                                            CornerRadius="6" 
+                                            Padding="10,4" 
+                                            HeightRequest="30" 
+                                            HorizontalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

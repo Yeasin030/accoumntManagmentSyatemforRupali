@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
+             x:Class="AccountManagement.App.Views.LedgerPage"
+             x:Name="LedgerViewPage"
+             x:DataType="vm:LedgerViewModel"
+             Title="Daily Ledger | জাবেদা ও খতিয়ান"
+             BackgroundColor="#F9F7F7">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="25" RowSpacing="18">
+
+        <!-- Top Controls & Filters Bar -->
+        <Border Grid.Row="0" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+            <VerticalStackLayout Spacing="14">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" VerticalOptions="Center">
+                    <Button Grid.Column="0" 
+                            Text="← Back to Dashboard | ড্যাশবোর্ড" 
+                            Clicked="OnBackClicked" 
+                            BackgroundColor="#DCE3EF" 
+                            TextColor="#08294D" 
+                            BorderColor="#3D73B0" 
+                            BorderWidth="1" 
+                            CornerRadius="8" 
+                            Padding="14,8" 
+                            FontSize="12" 
+                            FontAttributes="Bold" />
+                    <Label Grid.Column="1" Text="Daily &amp; Monthly Ledger | দৈনিক ও মাসিক খতিয়ান" FontSize="20" FontAttributes="Bold" TextColor="#08294D" VerticalOptions="Center" />
+                    <Button Grid.Column="2" Text="+ New Transaction" Clicked="OnNewTransactionClicked" BackgroundColor="#059669" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="8" Padding="14,8" />
+                </Grid>
+
+                <!-- Filter Controls Row -->
+                <Grid ColumnDefinitions="*,*,*,2*,Auto,Auto" ColumnSpacing="12" VerticalOptions="Center">
+
+                    <!-- Start Date -->
+                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                        <Label Text="From Date" FontSize="11" TextColor="#64748B" FontAttributes="Bold" />
+                        <DatePicker Date="{Binding StartDate}" BackgroundColor="#F9F7F7" TextColor="#08294D" Format="dd-MM-yyyy" />
+                    </VerticalStackLayout>
+
+                    <!-- End Date -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="4">
+                        <Label Text="To Date" FontSize="11" TextColor="#64748B" FontAttributes="Bold" />
+                        <DatePicker Date="{Binding EndDate}" BackgroundColor="#F9F7F7" TextColor="#08294D" Format="dd-MM-yyyy" />
+                    </VerticalStackLayout>
+
+                    <!-- Customer Picker -->
+                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                        <Label Text="Customer" FontSize="11" TextColor="#64748B" FontAttributes="Bold" />
+                        <Picker ItemsSource="{Binding Customers}" 
+                                SelectedItem="{Binding SelectedCustomer}" 
+                                ItemDisplayBinding="{Binding Name}" 
+                                Title="All Customers" 
+                                BackgroundColor="#F9F7F7" 
+                                TextColor="#08294D" 
+                                TitleColor="#64748B" />
+                    </VerticalStackLayout>
+
+                    <!-- Search Input -->
+                    <VerticalStackLayout Grid.Column="3" Spacing="4">
+                        <Label Text="Search Job / Customer / Work" FontSize="11" TextColor="#64748B" FontAttributes="Bold" />
+                        <Entry Text="{Binding SearchTerm}" Placeholder="Search..." BackgroundColor="#F9F7F7" TextColor="#08294D" PlaceholderColor="#64748B" />
+                    </VerticalStackLayout>
+
+                    <!-- Filter Buttons -->
+                    <Button Grid.Column="4" Text="Filter" Command="{Binding LoadTransactionsCommand}" BackgroundColor="#3D73B0" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="8" VerticalOptions="End" HeightRequest="42" Padding="16,0" />
+                    <Button Grid.Column="5" Text="Reset" Command="{Binding ResetFiltersCommand}" BackgroundColor="#DCE3EF" TextColor="#08294D" CornerRadius="8" VerticalOptions="End" HeightRequest="42" Padding="16,0" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Main Ledger Table -->
+        <Border Grid.Row="1" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="0">
+            <Grid RowDefinitions="Auto,*">
+
+                <!-- Table Header -->
+                <Grid Grid.Row="0" ColumnDefinitions="110,120,180,*,110,110,110,90,90" BackgroundColor="#DCE3EF" Padding="16,12">
+                    <Label Grid.Column="0" Text="DATE" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="1" Text="JOB NO" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="2" Text="CUSTOMER" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="3" Text="WORK DESCRIPTION" FontSize="11" FontAttributes="Bold" TextColor="#08294D" />
+                    <Label Grid.Column="4" Text="BILL (৳)" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                    <Label Grid.Column="5" Text="PAID (৳)" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                    <Label Grid.Column="6" Text="DUE (৳)" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="End" />
+                    <Label Grid.Column="7" Text="STATUS" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
+                    <Label Grid.Column="8" Text="ACTION" FontSize="11" FontAttributes="Bold" TextColor="#08294D" HorizontalTextAlignment="Center" />
+                </Grid>
+
+                <!-- Transactions CollectionView -->
+                <CollectionView Grid.Row="1" ItemsSource="{Binding Transactions}">
+                    <CollectionView.EmptyView>
+                        <Label Text="No transactions found matching your criteria." 
+                               TextColor="#64748B" 
+                               HorizontalTextAlignment="Center" 
+                               VerticalTextAlignment="Center" 
+                               Padding="60" />
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:TransactionDto">
+                            <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="16,12" BackgroundColor="#FFFFFF">
+                                <Grid ColumnDefinitions="110,120,180,*,110,110,110,90,90" VerticalOptions="Center">
+                                    <Label Grid.Column="0" Text="{Binding TransactionDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#475569" FontSize="12" />
+                                    <Label Grid.Column="1" Text="{Binding TransactionNumber}" TextColor="#3D73B0" FontAttributes="Bold" FontSize="12" />
+                                    <Label Grid.Column="2" Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="3" Text="{Binding WorkDescription}" TextColor="#64748B" FontSize="12" LineBreakMode="TailTruncation" />
+                                    <Label Grid.Column="4" Text="{Binding TotalBillAmount, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontAttributes="Bold" FontSize="12" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="5" Text="{Binding TotalPaidAmount, StringFormat='৳ {0:N2}'}" TextColor="#059669" FontSize="12" HorizontalTextAlignment="End" />
+                                    <Label Grid.Column="6" Text="{Binding BalanceDue, StringFormat='৳ {0:N2}'}" TextColor="#D97706" FontAttributes="Bold" FontSize="12" HorizontalTextAlignment="End" />
+
+                                    <Border Grid.Column="7" StrokeShape="RoundRectangle 6" Padding="6,2" HorizontalOptions="Center">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsCancelled}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="#FEE2E2" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding IsCancelled}" Value="False">
+                                                <Setter Property="BackgroundColor" Value="#D1FAE5" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+                                        <Label Text="{Binding Status}" FontSize="10" FontAttributes="Bold">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsCancelled}" Value="True">
+                                                    <Setter Property="TextColor" Value="#DC2626" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsCancelled}" Value="False">
+                                                    <Setter Property="TextColor" Value="#065F46" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+
+                                    <!-- Action: Cancel Transaction Button -->
+                                    <Button Grid.Column="8" 
+                                            Text="Cancel" 
+                                            Command="{Binding Source={x:Reference LedgerViewPage}, Path=BindingContext.CancelTransactionCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding CanCancel}"
+                                            BackgroundColor="#FEE2E2" 
+                                            TextColor="#DC2626" 
+                                            FontSize="10" 
+                                            Padding="6,2" 
+                                            HeightRequest="28" 
+                                            CornerRadius="4" 
+                                            HorizontalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Border>
+
+        <!-- Pagination Controls Footer -->
+        <Border Grid.Row="2" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="18,12">
+            <Grid ColumnDefinitions="Auto,*,Auto" VerticalOptions="Center">
+                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                    <Label Text="Total Records:" TextColor="#64748B" FontSize="13" />
+                    <Label Text="{Binding TotalCount}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
+                </HorizontalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="2" Spacing="14" VerticalOptions="Center">
+                    <Button Text="◀ Previous" 
+                            Command="{Binding PreviousPageCommand}" 
+                            IsEnabled="{Binding HasPreviousPage}" 
+                            BackgroundColor="#DCE3EF" 
+                            TextColor="#08294D" 
+                            FontSize="12" 
+                            CornerRadius="6" 
+                            Padding="12,6" />
+
+                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                        <Label Text="Page" TextColor="#64748B" FontSize="13" />
+                        <Label Text="{Binding PageNumber}" TextColor="#3D73B0" FontAttributes="Bold" FontSize="13" />
+                        <Label Text="of" TextColor="#64748B" FontSize="13" />
+                        <Label Text="{Binding TotalPages}" TextColor="#64748B" FontAttributes="Bold" FontSize="13" />
+                    </HorizontalStackLayout>
+
+                    <Button Text="Next ▶" 
+                            Command="{Binding NextPageCommand}" 
+                            IsEnabled="{Binding HasNextPage}" 
+                            BackgroundColor="#DCE3EF" 
+                            TextColor="#08294D" 
+                            FontSize="12" 
+                            CornerRadius="6" 
+                            Padding="12,6" />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             xmlns:dto="clr-namespace:AccountManagement.Application.DTOs;assembly=AccountManagement.Application"
+             xmlns:enums="clr-namespace:AccountManagement.Domain.Enums;assembly=AccountManagement.Domain"
+             x:Class="AccountManagement.App.Views.PaymentExpensePage"
+             x:DataType="vm:PaymentExpenseViewModel"
+             Title="Payments &amp; Expenses | জমা ও খরচ"
+             BackgroundColor="#F9F7F7">
+
+    <Grid RowDefinitions="Auto,*" Padding="25" RowSpacing="16">
+
+        <!-- Top Header Bar with Back Button -->
+        <Border Grid.Row="0" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="18,14">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalOptions="Center">
+                <Button Grid.Column="0" 
+                        Text="← Back to Dashboard | ড্যাশবোর্ড" 
+                        Clicked="OnBackClicked" 
+                        BackgroundColor="#DCE3EF" 
+                        TextColor="#08294D" 
+                        BorderColor="#3D73B0" 
+                        BorderWidth="1" 
+                        CornerRadius="8" 
+                        Padding="14,8" 
+                        FontSize="12" 
+                        FontAttributes="Bold" />
+                <Label Grid.Column="1" Text="Payments &amp; Expenses Management | জমা ও কারখানা খরচ" FontSize="20" FontAttributes="Bold" TextColor="#08294D" VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="20">
+
+        <!-- Left: Customer Collections / Payments Received -->
+        <Border Grid.Column="0" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+            <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14">
+
+                <!-- Header -->
+                <Label Grid.Row="0" Text="Customer Payments (Collections) | পাওনা আদায়" FontSize="18" FontAttributes="Bold" TextColor="#059669" />
+
+                <!-- Payment Form -->
+                <Border Grid.Row="1" BackgroundColor="#F9F7F7" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="14">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <!-- Customer Entry Type -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Customer Name * | গ্রাহক" FontSize="11" TextColor="#3D73B0" FontAttributes="Bold" />
+                                <Grid ColumnDefinitions="*,80" ColumnSpacing="4">
+                                    <Entry Grid.Column="0" 
+                                           Text="{Binding CustomerName}" 
+                                           Placeholder="Type customer..." 
+                                           BackgroundColor="#FFFFFF" 
+                                           TextColor="#08294D" 
+                                           FontSize="12" />
+                                    <Picker Grid.Column="1" 
+                                            ItemsSource="{Binding Customers}"
+                                            SelectedItem="{Binding SelectedCustomer}"
+                                            ItemDisplayBinding="{Binding Name}"
+                                            Title="Existing"
+                                            BackgroundColor="#FFFFFF" 
+                                            TextColor="#08294D" 
+                                            TitleColor="#64748B" 
+                                            FontSize="10" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Date -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Payment Date *" FontSize="11" TextColor="#64748B" />
+                                <DatePicker Date="{Binding PaymentDate}" BackgroundColor="#FFFFFF" TextColor="#08294D" Format="dd-MM-yyyy" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <!-- Amount -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Amount Received (৳) *" FontSize="11" TextColor="#64748B" />
+                                <Entry Text="{Binding PaymentAmount}" Keyboard="Numeric" Placeholder="0.00" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <!-- Method -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Method *" FontSize="11" TextColor="#64748B" />
+                                <Picker SelectedItem="{Binding PaymentMethod}" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type enums:PaymentMethod}">
+                                            <enums:PaymentMethod>Cash</enums:PaymentMethod>
+                                            <enums:PaymentMethod>bKash</enums:PaymentMethod>
+                                            <enums:PaymentMethod>Nagad</enums:PaymentMethod>
+                                            <enums:PaymentMethod>BankTransfer</enums:PaymentMethod>
+                                            <enums:PaymentMethod>Cheque</enums:PaymentMethod>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Trx / Cheque Ref" FontSize="11" TextColor="#64748B" />
+                                <Entry Text="{Binding PaymentReference}" Placeholder="e.g. TrxID / Chq No" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Remarks" FontSize="11" TextColor="#64748B" />
+                                <Entry Text="{Binding PaymentRemarks}" Placeholder="Notes" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Button Text="+ Record Payment" Command="{Binding RecordPaymentCommand}" BackgroundColor="#059669" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="6" HeightRequest="38" Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Recent Payments List -->
+                <CollectionView Grid.Row="2" ItemsSource="{Binding RecentPayments}">
+                    <CollectionView.Header>
+                        <Label Text="Recent Receipts | সাম্প্রতিক জমা" FontSize="13" FontAttributes="Bold" TextColor="#08294D" Padding="0,6" />
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:PaymentDto">
+                            <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="12" BackgroundColor="#FFFFFF" Margin="0,3">
+                                <Grid ColumnDefinitions="100,*,Auto" VerticalOptions="Center">
+                                    <Label Grid.Column="0" Text="{Binding PaymentDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#64748B" FontSize="11" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding CustomerName}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
+                                        <Label Text="{Binding PaymentMethod, StringFormat='Via {0}'}" TextColor="#3D73B0" FontSize="11" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="{Binding Amount, StringFormat='+ ৳ {0:N2}'}" TextColor="#059669" FontAttributes="Bold" FontSize="14" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Border>
+
+        <!-- Right: Business Expenses (Overhead, Rent, Power, Salaries) -->
+        <Border Grid.Column="1" BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+            <Grid RowDefinitions="Auto,Auto,*" RowSpacing="14">
+
+                <!-- Header -->
+                <Label Grid.Row="0" Text="Overhead &amp; Business Expenses | কারখানা ও প্রাতিষ্ঠানিক খরচ" FontSize="18" FontAttributes="Bold" TextColor="#D97706" />
+
+                <!-- Expense Form -->
+                <Border Grid.Row="1" BackgroundColor="#F9F7F7" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="14">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <!-- Category -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Category *" FontSize="11" TextColor="#64748B" />
+                                <Picker ItemsSource="{Binding StandardExpenseCategories}"
+                                        SelectedItem="{Binding ExpenseCategory}"
+                                        BackgroundColor="#FFFFFF" 
+                                        TextColor="#08294D" 
+                                        FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <!-- Date -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Date *" FontSize="11" TextColor="#64748B" />
+                                <DatePicker Date="{Binding ExpenseDate}" BackgroundColor="#FFFFFF" TextColor="#08294D" Format="dd-MM-yyyy" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="2*,*" ColumnSpacing="10">
+                            <!-- Description -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Description *" FontSize="11" TextColor="#64748B" />
+                                <Entry Text="{Binding ExpenseDescription}" Placeholder="e.g. Machine motor repair, Oil, Ink" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <!-- Amount -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Amount (৳) *" FontSize="11" TextColor="#64748B" />
+                                <Entry Text="{Binding ExpenseAmount}" Keyboard="Numeric" Placeholder="0.00" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Paid To / Vendor" FontSize="11" TextColor="#64748B" />
+                                <Entry Text="{Binding ExpensePaidTo}" Placeholder="e.g. Technician / Landlord" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Payment Method" FontSize="11" TextColor="#64748B" />
+                                <Picker SelectedItem="{Binding ExpensePaymentMethod}" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type enums:PaymentMethod}">
+                                            <enums:PaymentMethod>Cash</enums:PaymentMethod>
+                                            <enums:PaymentMethod>bKash</enums:PaymentMethod>
+                                            <enums:PaymentMethod>Nagad</enums:PaymentMethod>
+                                            <enums:PaymentMethod>BankTransfer</enums:PaymentMethod>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Button Text="+ Record Expense" Command="{Binding RecordExpenseCommand}" BackgroundColor="#D97706" TextColor="#FFFFFF" FontAttributes="Bold" CornerRadius="6" HeightRequest="38" Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Recent Expenses List -->
+                <CollectionView Grid.Row="2" ItemsSource="{Binding RecentExpenses}">
+                    <CollectionView.Header>
+                        <Label Text="Recent Expenses | সাম্প্রতিক খরচ" FontSize="13" FontAttributes="Bold" TextColor="#08294D" Padding="0,6" />
+                    </CollectionView.Header>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="dto:ExpenseDto">
+                            <Border Stroke="#DCE3EF" StrokeThickness="0.8" Padding="12" BackgroundColor="#FFFFFF" Margin="0,3">
+                                <Grid ColumnDefinitions="100,*,Auto" VerticalOptions="Center">
+                                    <Label Grid.Column="0" Text="{Binding ExpenseDate, StringFormat='{0:dd MMM yyyy}'}" TextColor="#64748B" FontSize="11" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Category}" TextColor="#08294D" FontAttributes="Bold" FontSize="13" />
+                                        <Label Text="{Binding Description}" TextColor="#64748B" FontSize="11" LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="{Binding Amount, StringFormat='- ৳ {0:N2}'}" TextColor="#E11D48" FontAttributes="Bold" FontSize="14" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </Grid>
+        </Border>
+
+        </Grid>
+    </Grid>
+</ContentPage>

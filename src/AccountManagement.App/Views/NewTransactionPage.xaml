@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             xmlns:enums="clr-namespace:AccountManagement.Domain.Enums;assembly=AccountManagement.Domain"
+             x:Class="AccountManagement.App.Views.NewTransactionPage"
+             x:DataType="vm:NewTransactionViewModel"
+             Title="New Job Entry | নতুন কাজের এন্ট্রি"
+             BackgroundColor="#F9F7F7">
+
+    <ScrollView>
+        <Grid ColumnDefinitions="2*,*" Padding="25" ColumnSpacing="25">
+
+            <!-- Left Main Form: Customer, Work, Materials, Production Costs -->
+            <VerticalStackLayout Grid.Column="0" Spacing="20">
+
+                <!-- Header with Back Button -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalOptions="Center">
+                    <Button Grid.Column="0" 
+                            Text="← Back to Dashboard | ড্যাশবোর্ড" 
+                            Clicked="OnBackClicked" 
+                            BackgroundColor="#DCE3EF" 
+                            TextColor="#08294D" 
+                            BorderColor="#3D73B0" 
+                            BorderWidth="1" 
+                            CornerRadius="8" 
+                            Padding="14,8" 
+                            FontSize="12" 
+                            FontAttributes="Bold" />
+                    <Label Grid.Column="1" 
+                           Text="Create New Ledger Transaction | নতুন কাজের হিসাব" 
+                           FontSize="20" 
+                           FontAttributes="Bold" 
+                           TextColor="#08294D" 
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Job Details Section -->
+                <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+                    <VerticalStackLayout Spacing="14">
+                        <Label Text="JOB DETAILS | কাজের তথ্য" FontSize="12" FontAttributes="Bold" TextColor="#08294D" CharacterSpacing="1" />
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                            <!-- Customer Entry Type -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0" Text="Customer Name * | গ্রাহকের নাম" FontSize="12" TextColor="#3D73B0" FontAttributes="Bold" />
+                                    <Label Grid.Column="1" Text="(Type or Pick)" FontSize="10" TextColor="#64748B" />
+                                </Grid>
+                                
+                                <Grid ColumnDefinitions="*,120" ColumnSpacing="6">
+                                    <!-- Primary: Entry Type so user can type directly -->
+                                    <Entry Grid.Column="0" 
+                                           Text="{Binding CustomerName}" 
+                                           Placeholder="Type customer name..." 
+                                           BackgroundColor="#F9F7F7" 
+                                           TextColor="#08294D" 
+                                           PlaceholderColor="#64748B" 
+                                           FontSize="13" />
+                                    
+                                    <!-- Optional Picker for existing customers -->
+                                    <Picker Grid.Column="1" 
+                                            ItemsSource="{Binding Customers}" 
+                                            SelectedItem="{Binding SelectedCustomer}" 
+                                            ItemDisplayBinding="{Binding Name}" 
+                                            Title="Existing..." 
+                                            BackgroundColor="#F9F7F7" 
+                                            TextColor="#08294D" 
+                                            TitleColor="#64748B" 
+                                            FontSize="11" />
+                                </Grid>
+
+                                <!-- Customer Phone Number (Optional) -->
+                                <Entry Text="{Binding CustomerPhone}" 
+                                       Placeholder="Phone / মোবাইল (optional)" 
+                                       Keyboard="Telephone" 
+                                       BackgroundColor="#F9F7F7" 
+                                       TextColor="#08294D" 
+                                       PlaceholderColor="#64748B" 
+                                       FontSize="11" />
+                            </VerticalStackLayout>
+
+                            <!-- Transaction Date -->
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Date *" FontSize="12" TextColor="#64748B" />
+                                <DatePicker Date="{Binding TransactionDate}" BackgroundColor="#F9F7F7" TextColor="#08294D" Format="dd-MM-yyyy" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Work Description -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Work Description * (e.g. 5000 Cash Memo, 1/8 Demy, 3-part NCR)" FontSize="12" TextColor="#64748B" />
+                            <Entry Text="{Binding WorkDescription}" Placeholder="Describe print/packaging job..." BackgroundColor="#F9F7F7" TextColor="#08294D" PlaceholderColor="#64748B" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Materials / Paper Items Section -->
+                <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="PAPER &amp; RAW MATERIALS | কাগজ ও উপকরণ খরচ" FontSize="12" FontAttributes="Bold" TextColor="#08294D" CharacterSpacing="1" />
+                            <Button Grid.Column="1" Text="+ Add Material" Command="{Binding AddItemCommand}" BackgroundColor="#DCE3EF" TextColor="#08294D" BorderColor="#3D73B0" BorderWidth="1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="12,4" HeightRequest="32" />
+                        </Grid>
+
+                        <!-- Materials List -->
+                        <CollectionView ItemsSource="{Binding Items}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:TransactionLineItemViewModel">
+                                    <Border BackgroundColor="#F9F7F7" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12" Margin="0,4">
+                                        <Grid ColumnDefinitions="2.2*,70,105,95,70,85,90,Auto" ColumnSpacing="8" VerticalOptions="Center">
+
+                                            <!-- Material Picker -->
+                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                <Label Text="Material Name" FontSize="10" TextColor="#64748B" />
+                                                <Grid ColumnDefinitions="*,75" ColumnSpacing="4">
+                                                    <Entry Grid.Column="0" 
+                                                           Text="{Binding MaterialName}" 
+                                                           Placeholder="Material name..." 
+                                                           BackgroundColor="#FFFFFF" 
+                                                           TextColor="#08294D" 
+                                                           FontSize="12" />
+                                                    <Picker Grid.Column="1" 
+                                                            ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:NewTransactionViewModel}}, Path=AvailableMaterials}"
+                                                            SelectedItem="{Binding SelectedMaterial}"
+                                                            ItemDisplayBinding="{Binding Name}"
+                                                            Title="Presets"
+                                                            BackgroundColor="#FFFFFF" 
+                                                            TextColor="#08294D" 
+                                                            TitleColor="#64748B" 
+                                                            FontSize="10" />
+                                                </Grid>
+                                            </VerticalStackLayout>
+
+                                            <!-- GSM -->
+                                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                <Label Text="GSM" FontSize="10" TextColor="#64748B" />
+                                                <Entry Text="{Binding Gsm}" Placeholder="80 GSM" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Size (Entry + Presets) -->
+                                            <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                                <Label Text="Paper Size (সাইজ)" FontSize="10" TextColor="#64748B" />
+                                                <Grid ColumnDefinitions="*,36" ColumnSpacing="2">
+                                                    <Entry Grid.Column="0" Text="{Binding Size}" Placeholder="18/23" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                                                    <Picker Grid.Column="1"
+                                                            ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type vm:NewTransactionViewModel}}, Path=StandardPaperSizes}"
+                                                            SelectedItem="{Binding Size}"
+                                                            Title="▼"
+                                                            BackgroundColor="#FFFFFF"
+                                                            TextColor="#08294D"
+                                                            TitleColor="#64748B"
+                                                            FontSize="10" />
+                                                </Grid>
+                                            </VerticalStackLayout>
+
+                                            <!-- Unit -->
+                                            <VerticalStackLayout Grid.Column="3" Spacing="2">
+                                                <Label Text="Unit (একক)" FontSize="10" TextColor="#64748B" />
+                                                <Picker SelectedItem="{Binding Unit}" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="11">
+                                                    <Picker.ItemsSource>
+                                                        <x:Array Type="{x:Type enums:UnitOfMeasure}">
+                                                            <enums:UnitOfMeasure>Ream</enums:UnitOfMeasure>
+                                                            <enums:UnitOfMeasure>Piece</enums:UnitOfMeasure>
+                                                            <enums:UnitOfMeasure>Sheet</enums:UnitOfMeasure>
+                                                            <enums:UnitOfMeasure>Packet</enums:UnitOfMeasure>
+                                                            <enums:UnitOfMeasure>Dosta</enums:UnitOfMeasure>
+                                                            <enums:UnitOfMeasure>Kg</enums:UnitOfMeasure>
+                                                        </x:Array>
+                                                    </Picker.ItemsSource>
+                                                </Picker>
+                                            </VerticalStackLayout>
+
+                                            <!-- Quantity -->
+                                            <VerticalStackLayout Grid.Column="4" Spacing="2">
+                                                <Label Text="Qty (পরিমাণ)" FontSize="10" TextColor="#64748B" />
+                                                <Entry Text="{Binding Quantity}" Keyboard="Numeric" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Unit Rate -->
+                                            <VerticalStackLayout Grid.Column="5" Spacing="2">
+                                                <Label Text="Rate ৳ (দর)" FontSize="10" TextColor="#64748B" />
+                                                <Entry Text="{Binding UnitRate}" Keyboard="Numeric" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Total Item Cost -->
+                                            <VerticalStackLayout Grid.Column="6" Spacing="2" VerticalOptions="Center">
+                                                <Label Text="Cost (৳)" FontSize="10" TextColor="#64748B" />
+                                                <Label Text="{Binding TotalCost, StringFormat='৳ {0:N2}'}" TextColor="#059669" FontAttributes="Bold" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Remove Item Button -->
+                                            <Button Grid.Column="7" 
+                                                    Text="✕" 
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewTransactionViewModel}}, Path=RemoveItemCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#FEE2E2" 
+                                                    TextColor="#DC2626" 
+                                                    FontSize="12" 
+                                                    Padding="0" 
+                                                    WidthRequest="32" 
+                                                    HeightRequest="32" 
+                                                    CornerRadius="6" 
+                                                    VerticalOptions="End" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Production Costs Section (Plate, Print, Binding, etc.) -->
+                <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+                    <VerticalStackLayout Spacing="14">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="PRODUCTION &amp; FINISHING COSTS | ছাপা ও বাঁধাই খরচ" FontSize="12" FontAttributes="Bold" TextColor="#08294D" CharacterSpacing="1" />
+                            <Button Grid.Column="1" Text="+ Add Cost Entry" Command="{Binding AddCostEntryCommand}" BackgroundColor="#DCE3EF" TextColor="#08294D" BorderColor="#3D73B0" BorderWidth="1" FontSize="11" FontAttributes="Bold" CornerRadius="6" Padding="12,4" HeightRequest="32" />
+                        </Grid>
+
+                        <CollectionView ItemsSource="{Binding CostEntries}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="vm:CostEntryViewModel">
+                                    <Border BackgroundColor="#F9F7F7" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12" Margin="0,4">
+                                        <Grid ColumnDefinitions="160,*,120,Auto" ColumnSpacing="10" VerticalOptions="Center">
+
+                                            <!-- Category -->
+                                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                                <Label Text="Category" FontSize="10" TextColor="#64748B" />
+                                                <Picker SelectedItem="{Binding Category}" 
+                                                        BackgroundColor="#FFFFFF" 
+                                                        TextColor="#08294D" 
+                                                        FontSize="12">
+                                                    <Picker.ItemsSource>
+                                                        <x:Array Type="{x:Type enums:CostCategory}">
+                                                            <enums:CostCategory>Plate</enums:CostCategory>
+                                                            <enums:CostCategory>Printing</enums:CostCategory>
+                                                            <enums:CostCategory>Lamination</enums:CostCategory>
+                                                            <enums:CostCategory>Binding</enums:CostCategory>
+                                                            <enums:CostCategory>DieCutting</enums:CostCategory>
+                                                            <enums:CostCategory>Foiling</enums:CostCategory>
+                                                            <enums:CostCategory>Transport</enums:CostCategory>
+                                                            <enums:CostCategory>Miscellaneous</enums:CostCategory>
+                                                        </x:Array>
+                                                    </Picker.ItemsSource>
+                                                </Picker>
+                                            </VerticalStackLayout>
+
+                                            <!-- Description -->
+                                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                                <Label Text="Cost Description" FontSize="10" TextColor="#64748B" />
+                                                <Entry Text="{Binding Description}" Placeholder="e.g. Master plates, Die cutting" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Amount -->
+                                            <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                                <Label Text="Amount (৳)" FontSize="10" TextColor="#64748B" />
+                                                <Entry Text="{Binding Amount}" Keyboard="Numeric" BackgroundColor="#FFFFFF" TextColor="#08294D" FontSize="12" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Remove Button -->
+                                            <Button Grid.Column="3" 
+                                                    Text="✕" 
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NewTransactionViewModel}}, Path=RemoveCostEntryCommand}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="#FEE2E2" 
+                                                    TextColor="#DC2626" 
+                                                    FontSize="12" 
+                                                    Padding="0" 
+                                                    WidthRequest="32" 
+                                                    HeightRequest="32" 
+                                                    CornerRadius="6" 
+                                                    VerticalOptions="End" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+
+            <!-- Right Sidebar Panel: Financial Breakdown, Advance Payment, and Save -->
+            <VerticalStackLayout Grid.Column="1" Spacing="20">
+
+                <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="24">
+                    <VerticalStackLayout Spacing="18">
+                        <Label Text="BILL SUMMARY | বিল হিসাব" FontSize="16" FontAttributes="Bold" TextColor="#08294D" />
+
+                        <!-- Direct Material Cost -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Material Costs:" TextColor="#64748B" FontSize="13" />
+                            <Label Grid.Column="1" Text="{Binding MaterialCostTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="13" FontAttributes="Bold" />
+                        </Grid>
+
+                        <!-- Production Cost -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Production Costs:" TextColor="#64748B" FontSize="13" />
+                            <Label Grid.Column="1" Text="{Binding ProductionCostTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="13" FontAttributes="Bold" />
+                        </Grid>
+
+                        <!-- SubTotal -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Sub Total:" TextColor="#64748B" FontSize="13" />
+                            <Label Grid.Column="1" Text="{Binding SubTotal, StringFormat='৳ {0:N2}'}" TextColor="#08294D" FontSize="14" FontAttributes="Bold" />
+                        </Grid>
+
+                        <!-- Discount -->
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Discount (৳)" TextColor="#64748B" FontSize="12" />
+                            <Entry Text="{Binding Discount}" Keyboard="Numeric" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
+
+                        <!-- Total Bill -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="TOTAL BILL:" TextColor="#3D73B0" FontSize="16" FontAttributes="Bold" />
+                            <Label Grid.Column="1" Text="{Binding TotalBillFormatted}" TextColor="#08294D" FontSize="20" FontAttributes="Bold" />
+                        </Grid>
+
+                        <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
+
+                        <!-- Advance / Initial Payment -->
+                        <Label Text="ADVANCE PAYMENT | অগ্রিম জমা" FontSize="12" FontAttributes="Bold" TextColor="#059669" />
+                        
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Amount (৳)" TextColor="#64748B" FontSize="12" />
+                            <Entry Text="{Binding AdvancePaymentAmount}" Keyboard="Numeric" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                        </VerticalStackLayout>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Method" TextColor="#64748B" FontSize="11" />
+                                <Picker SelectedItem="{Binding AdvancePaymentMethod}" BackgroundColor="#F9F7F7" TextColor="#08294D" FontSize="12">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type enums:PaymentMethod}">
+                                            <enums:PaymentMethod>Cash</enums:PaymentMethod>
+                                            <enums:PaymentMethod>bKash</enums:PaymentMethod>
+                                            <enums:PaymentMethod>Nagad</enums:PaymentMethod>
+                                            <enums:PaymentMethod>BankTransfer</enums:PaymentMethod>
+                                            <enums:PaymentMethod>Cheque</enums:PaymentMethod>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="Trx / Ref No" TextColor="#64748B" FontSize="11" />
+                                <Entry Text="{Binding AdvancePaymentReference}" Placeholder="e.g. TrxID" BackgroundColor="#F9F7F7" TextColor="#08294D" FontSize="12" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <BoxView HeightRequest="1" BackgroundColor="#DCE3EF" />
+
+                        <!-- Balance Due -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="BALANCE DUE:" TextColor="#D97706" FontSize="15" FontAttributes="Bold" />
+                            <Label Grid.Column="1" Text="{Binding BalanceDueFormatted}" TextColor="#D97706" FontSize="18" FontAttributes="Bold" />
+                        </Grid>
+
+                        <!-- Action Buttons -->
+                        <Button Text="💾 Commit to Ledger" 
+                                Command="{Binding SaveTransactionCommand}" 
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#059669" 
+                                TextColor="#FFFFFF" 
+                                FontAttributes="Bold" 
+                                FontSize="15" 
+                                CornerRadius="8" 
+                                HeightRequest="48" 
+                                Margin="0,10,0,0" />
+
+                        <Button Text="← Cancel &amp; Back to Dashboard" 
+                                Clicked="OnCancelClicked" 
+                                BackgroundColor="#DCE3EF" 
+                                TextColor="#08294D" 
+                                BorderColor="#3D73B0"
+                                BorderWidth="1"
+                                CornerRadius="8" 
+                                HeightRequest="40" />
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+
+        </Grid>
+    </ScrollView>
+</ContentPage>

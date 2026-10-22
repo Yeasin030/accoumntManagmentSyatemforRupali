@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AccountManagement.App.ViewModels"
+             x:Class="AccountManagement.App.Views.BackupRestorePage"
+             x:DataType="vm:BackupRestoreViewModel"
+             Title="Backup &amp; Security | ব্যাকআপ ও সুরক্ষা"
+            BackgroundColor="#F9F7F7">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25" MaximumWidthRequest="800" HorizontalOptions="Center">
+
+            <!-- Header with Back Button -->
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalOptions="Center">
+                <Button Grid.Column="0" 
+                        Text="← Back to Dashboard | ড্যাশবোর্ড" 
+                        Clicked="OnBackClicked" 
+                        BackgroundColor="#DCE3EF" 
+                        TextColor="#08294D" 
+                        BorderColor="#3D73B0" 
+                        BorderWidth="1" 
+                        CornerRadius="8" 
+                        Padding="14,8" 
+                        FontSize="12" 
+                        FontAttributes="Bold" />
+                <Label Grid.Column="1" Text="Database Backup &amp; Recovery | ডেটাবেস ব্যাকআপ ও পুনরুদ্ধার" FontSize="20" FontAttributes="Bold" TextColor="#08294D" VerticalOptions="Center" />
+            </Grid>
+            <Label Text="Ensure your business records are safe by generating verified backups regularly." FontSize="14" TextColor="#5A6E85" />
+
+            <!-- Backup Card -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="24">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="CREATE NEW BACKUP" FontSize="12" FontAttributes="Bold" TextColor="#3D73B0" CharacterSpacing="1" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Backup Destination Folder" FontSize="12" TextColor="#5A6E85" />
+                        <Entry Text="{Binding BackupDirectory}" BackgroundColor="#F9F7F7" TextColor="#08294D" />
+                    </VerticalStackLayout>
+
+                    <Button Text="💾 Create Verified Backup" 
+                            Command="{Binding CreateBackupCommand}" 
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="#3D73B0" 
+                            TextColor="#FFFFFF" 
+                            FontAttributes="Bold" 
+                            CornerRadius="8" 
+                            HeightRequest="44" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Restore Card -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="24">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="RESTORE FROM ARCHIVE" FontSize="12" FontAttributes="Bold" TextColor="#D97706" CharacterSpacing="1" />
+
+                    <Label Text="Restoring will overwrite current ledger records with data from the backup file. Each backup includes a SHA256 checksum to verify file integrity before restoring." FontSize="13" TextColor="#5A6E85" />
+
+                    <Button Text="🔄 Restore Database" 
+                            Command="{Binding RestoreBackupCommand}" 
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="#D97706" 
+                            TextColor="#FFFFFF" 
+                            FontAttributes="Bold" 
+                            CornerRadius="8" 
+                            HeightRequest="44" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Status Card -->
+            <Border BackgroundColor="#FFFFFF" Stroke="#DCE3EF" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="20">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="System Status:" FontSize="12" FontAttributes="Bold" TextColor="#5A6E85" />
+                    <Label Text="{Binding StatusMessage}" FontSize="13" TextColor="#08294D" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
