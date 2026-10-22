@@ -11,10 +11,18 @@
     Title="Rupali Account Management System">
 
     <Shell.FlyoutHeader>
-        <VerticalStackLayout Padding="24,30,24,20" BackgroundColor="#08294D" Spacing="6">
-            <Label Text="RUPALI ACCOUNT" FontSize="18" FontAttributes="Bold" TextColor="#FFFFFF" CharacterSpacing="1" />
-            <Label Text="Press &amp; Packaging ERP" FontSize="12" TextColor="#DCE3EF" />
-            <BoxView HeightRequest="2" BackgroundColor="#3D73B0" Margin="0,15,0,0" />
+        <VerticalStackLayout Padding="20,24,20,16" BackgroundColor="#08294D" Spacing="10">
+            <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                <Border Stroke="#3D73B0" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="2" HeightRequest="56" WidthRequest="56" BackgroundColor="#FFFFFF" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Image Source="rupali_logo.png" Aspect="AspectFit" HeightRequest="52" WidthRequest="52" />
+                </Border>
+                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                    <Label Text="রূপালী একাউন্টস" FontSize="16" FontAttributes="Bold" TextColor="#FFFFFF" />
+                    <Label Text="RUPALI ACCOUNT" FontSize="11" FontAttributes="Bold" TextColor="#34D399" CharacterSpacing="0.8" />
+                    <Label Text="Press &amp; Packaging ERP" FontSize="10" TextColor="#DCE3EF" />
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+            <BoxView HeightRequest="1" BackgroundColor="#1E3A8A" Margin="0,6,0,0" />
         </VerticalStackLayout>
     </Shell.FlyoutHeader>
 

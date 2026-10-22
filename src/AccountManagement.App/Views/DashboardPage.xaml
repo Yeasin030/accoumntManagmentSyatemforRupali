@@ -17,9 +17,23 @@
                     StrokeThickness="1.5" 
                     StrokeShape="RoundRectangle 16" 
                     Padding="26,20">
-                <Grid ColumnDefinitions="*,Auto" RowSpacing="10" VerticalOptions="Center">
-                    <!-- Left: Titles and Live Status Badges -->
-                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="20" RowSpacing="10" VerticalOptions="Center">
+                    <!-- Software Logo -->
+                    <Border Grid.Column="0" 
+                            Stroke="#3D73B0" 
+                            StrokeThickness="1.5" 
+                            StrokeShape="RoundRectangle 14" 
+                            Padding="3" 
+                            HeightRequest="80" 
+                            WidthRequest="80" 
+                            BackgroundColor="#FFFFFF"
+                            VerticalOptions="Center" 
+                            HorizontalOptions="Center">
+                        <Image Source="rupali_logo.png" Aspect="AspectFit" HeightRequest="74" WidthRequest="74" />
+                    </Border>
+
+                    <!-- Center: Titles and Live Status Badges -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
                         <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
                             <Label Text="রূপালী প্রেস অ্যান্ড প্যাকেজিং" 
                                    FontSize="24" 
@@ -62,7 +76,7 @@
                     </VerticalStackLayout>
 
                     <!-- Right: Quick Action Buttons -->
-                    <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                    <HorizontalStackLayout Grid.Column="2" Spacing="10" VerticalOptions="Center">
                         <Button Text="🔄 Refresh" 
                                 Command="{Binding LoadDashboardCommand}"
                                 BackgroundColor="#0E3866" 
